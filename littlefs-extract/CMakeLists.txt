@@ -13,7 +13,9 @@ find_package(libarchive
         REQUIRED)
 
 add_executable(littlefs-extract
-        main.cpp)
+        main.cpp
+        IBlockDevice.hpp
+        FileBlockDevice.cpp FileBlockDevice.hpp)
 target_include_directories(littlefs-extract
         PRIVATE ${LibArchive_INCLUDE_DIRS})
 target_link_libraries(littlefs-extract
