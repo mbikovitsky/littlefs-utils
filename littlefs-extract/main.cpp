@@ -6,7 +6,7 @@
 
 #include <boost/program_options.hpp>
 
-#include <lfs.h>
+#include <lfs2.h>
 
 
 namespace po = boost::program_options;
@@ -14,11 +14,11 @@ namespace po = boost::program_options;
 
 struct CommandLineOptions
 {
-    lfs_size_t block_size;
-    lfs_size_t read_size;
-    lfs_size_t prog_size;
-    lfs_size_t filesystem_size;
-    lfs_size_t file_offset;
+    lfs2_size_t block_size;
+    lfs2_size_t read_size;
+    lfs2_size_t prog_size;
+    lfs2_size_t filesystem_size;
+    lfs2_size_t file_offset;
     std::wstring input_file_path;
     std::wstring output_file_path;
 };
