@@ -1,18 +1,16 @@
-#include <iostream>
-#include <string>
-#include <locale>
-#include <exception>
-#include <optional>
 #include <cstdint>
+#include <exception>
+#include <iostream>
+#include <locale>
+#include <optional>
+#include <string>
 
 #include <boost/program_options.hpp>
 
 #include <lfs1.h>
 #include <lfs2.h>
 
-
 namespace po = boost::program_options;
-
 
 struct CommandLineOptions
 {
@@ -25,7 +23,6 @@ struct CommandLineOptions
     std::wstring input_file_path;
     std::wstring output_file_path;
 };
-
 
 #if defined(_MSC_VER)
 std::optional<CommandLineOptions> parse_command_line(int argc, wchar_t ** argv)
@@ -40,18 +37,30 @@ std::optional<CommandLineOptions> parse_command_line(int argc, char ** argv)
         po::options_description desc("Allowed options");
         desc.add_options()
             ("help", "produce help message")
-            ("littlefs-version,l", po::value(&options.version)->required(), "LittleFS version to use")
-            ("block-size,b", po::value(&options.block_size)->required(), "filesystem block size")
-            ("read-size,r", po::value(&options.read_size)->required(), "filesystem read size")
-            ("prog-size,p", po::value(&options.prog_size)->required(), "filesystem prog size")
+            ("littlefs-version,l",
+                    po::value(&options.version)->required(),
+                    "littlefs version to use")
+            ("block-size,b",
+                    po::value(&options.block_size)->required(),
+                    "filesystem block size")
+            ("read-size,r",
+                    po::value(&options.read_size)->required(),
+                    "filesystem read size")
+            ("prog-size,p",
+                    po::value(&options.prog_size)->required(),
+                    "filesystem prog size")
             ("filesystem-size",
-             po::value(&options.filesystem_size)->default_value(0),
-             "filesystem size (default is input file size)")
+                    po::value(&options.filesystem_size)->default_value(0),
+                    "filesystem size (default is input file size)")
             ("file-offset",
-             po::value(&options.file_offset)->default_value(0),
-             "offset within the input file where filesystem begins")
-            ("input-file,i", po::wvalue(&options.input_file_path)->required(), "littlefs image file")
-            ("output-file,o", po::wvalue(&options.output_file_path)->required(), "output tar file")
+                    po::value(&options.file_offset)->default_value(0),
+                    "offset within the input file where filesystem begins")
+            ("input-file,i",
+                    po::wvalue(&options.input_file_path)->required(),
+                    "littlefs image file")
+            ("output-file,o",
+                    po::wvalue(&options.output_file_path)->required(),
+                    "output tar file")
         ;
 
         po::variables_map vm;
