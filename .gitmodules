@@ -1,3 +1,7 @@
 [submodule "littlefs"]
 	path = littlefs2/littlefs
 	url = https://github.com/ARMmbed/littlefs.git
+[submodule "littlefs1"]
+	path = littlefs1/littlefs
+	url = https://github.com/ARMmbed/littlefs.git
+	branch = v1-prefix
