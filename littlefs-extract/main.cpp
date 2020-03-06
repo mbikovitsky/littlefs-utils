@@ -16,6 +16,7 @@ namespace po = boost::program_options;
 
 struct CommandLineOptions
 {
+    std::uint32_t version;
     std::uint32_t block_size;
     std::uint32_t read_size;
     std::uint32_t prog_size;
@@ -39,6 +40,7 @@ std::optional<CommandLineOptions> parse_command_line(int argc, char ** argv)
         po::options_description desc("Allowed options");
         desc.add_options()
             ("help", "produce help message")
+            ("littlefs-version,l", po::value(&options.version)->required(), "LittleFS version to use")
             ("block-size,b", po::value(&options.block_size)->required(), "filesystem block size")
             ("read-size,r", po::value(&options.read_size)->required(), "filesystem read size")
             ("prog-size,p", po::value(&options.prog_size)->required(), "filesystem prog size")

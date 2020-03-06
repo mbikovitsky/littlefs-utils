@@ -12,7 +12,8 @@ find_package(libarchive
         3.4.1
         REQUIRED)
 
-add_executable(littlefs-extract main.cpp)
+add_executable(littlefs-extract
+        main.cpp)
 target_include_directories(littlefs-extract
         PRIVATE ${LibArchive_INCLUDE_DIRS})
 target_link_libraries(littlefs-extract
