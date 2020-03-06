@@ -17,3 +17,8 @@ target_include_directories(littlefs-extract
         PRIVATE ${LibArchive_INCLUDE_DIRS})
 target_link_libraries(littlefs-extract
         PRIVATE Boost::program_options ${LibArchive_LIBRARIES} littlefs)
+
+if (MSVC)
+    target_compile_definitions(littlefs-extract
+            PRIVATE -DUNICODE -D_UNICODE)
+endif (MSVC)
