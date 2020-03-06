@@ -3,9 +3,11 @@
 #include <locale>
 #include <exception>
 #include <optional>
+#include <cstdint>
 
 #include <boost/program_options.hpp>
 
+#include <lfs1.h>
 #include <lfs2.h>
 
 
@@ -14,11 +16,11 @@ namespace po = boost::program_options;
 
 struct CommandLineOptions
 {
-    lfs2_size_t block_size;
-    lfs2_size_t read_size;
-    lfs2_size_t prog_size;
-    lfs2_size_t filesystem_size;
-    lfs2_size_t file_offset;
+    std::uint32_t block_size;
+    std::uint32_t read_size;
+    std::uint32_t prog_size;
+    std::uint32_t filesystem_size;
+    std::uint32_t file_offset;
     std::wstring input_file_path;
     std::wstring output_file_path;
 };

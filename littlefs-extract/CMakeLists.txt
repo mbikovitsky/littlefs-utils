@@ -16,7 +16,7 @@ add_executable(littlefs-extract main.cpp)
 target_include_directories(littlefs-extract
         PRIVATE ${LibArchive_INCLUDE_DIRS})
 target_link_libraries(littlefs-extract
-        PRIVATE Boost::program_options ${LibArchive_LIBRARIES} littlefs)
+        PRIVATE Boost::program_options ${LibArchive_LIBRARIES} littlefs1 littlefs2)
 
 if (MSVC)
     target_compile_definitions(littlefs-extract
