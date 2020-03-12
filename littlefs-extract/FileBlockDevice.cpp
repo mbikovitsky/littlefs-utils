@@ -38,8 +38,9 @@ void FileBlockDevice::read(std::uint32_t block, std::uint32_t offset, void * buf
         throw std::range_error("Invalid read range");
     }
 
-    auto const file_position = (std::size_t)block * (std::size_t)_block_size + (std::size_t)offset;
-    _filestream.seekg(file_position, std::ios_base::beg);
+    auto const file_position =
+        static_cast<std::size_t>(block) * static_cast<std::size_t>(_block_size) + static_cast<std::size_t>(offset);
+    _filestream.seekg(static_cast<std::ifstream::off_type>(file_position), std::ios_base::beg);
 
     _filestream.read(static_cast<char *>(buffer), size);
 }
@@ -56,8 +57,9 @@ void FileBlockDevice::program(std::uint32_t block, std::uint32_t offset, void co
         throw std::range_error("Invalid write range");
     }
 
-    auto const file_position = (std::size_t)block * (std::size_t)_block_size + (std::size_t)offset;
-    _filestream.seekp(file_position, std::ios_base::beg);
+    auto const file_position =
+        static_cast<std::size_t>(block) * static_cast<std::size_t>(_block_size) + static_cast<std::size_t>(offset);
+    _filestream.seekp(static_cast<std::ifstream::off_type>(file_position), std::ios_base::beg);
 
     _filestream.write(static_cast<char const *>(buffer), size);
 }
