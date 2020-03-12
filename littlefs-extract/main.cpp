@@ -58,7 +58,7 @@ std::optional<CommandLineOptions> parse_command_line(int argc, char ** argv)
     return options;
 }
 
-#if defined(_MSC_VER)
+#if defined(_UNICODE)
 int wmain(int argc, wchar_t ** argv)
 #else
 int main(int argc, char ** argv)
