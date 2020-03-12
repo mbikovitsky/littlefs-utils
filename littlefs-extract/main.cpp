@@ -66,9 +66,17 @@ int main(int argc, char ** argv)
 {
     // TODO: convert command-line to UTF-8
 
-    auto const options = parse_command_line(argc, argv);
-    if (!options)
+    try
     {
-        return 1;
+        auto const options = parse_command_line(argc, argv);
+        if (!options)
+        {
+            return 1;
+        }
+    }
+    catch (std::exception const & exception)
+    {
+        std::cerr << exception.what() << "\n";
+        return -1;
     }
 }
