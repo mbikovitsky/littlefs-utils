@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 project(littlefs-extract)
 
-set(CMAKE_CXX_STANDARD 17)
-
 find_package(Boost
         1.72
         REQUIRED
@@ -20,6 +18,7 @@ target_include_directories(littlefs-extract
         PRIVATE ${LibArchive_INCLUDE_DIRS})
 target_link_libraries(littlefs-extract
         PRIVATE Boost::program_options ${LibArchive_LIBRARIES} littlefs1 littlefs2)
+target_compile_features(littlefs-extract PRIVATE cxx_std_17)
 
 if (MSVC)
     target_compile_definitions(littlefs-extract
