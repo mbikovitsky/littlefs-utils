@@ -4,4 +4,4 @@ add_library(littlefs2
 target_include_directories(littlefs2
         INTERFACE littlefs)
 target_link_libraries(littlefs2
-        PRIVATE project_options project_warnings)
+        PRIVATE project_options)

@@ -4,7 +4,7 @@ add_library(littlefs1
 target_include_directories(littlefs1
         INTERFACE littlefs)
 target_link_libraries(littlefs1
-        PRIVATE project_options project_warnings)
+        PRIVATE project_options)
 
 if (MSVC)
     target_compile_definitions(littlefs1
