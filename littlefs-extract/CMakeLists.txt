@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 project(littlefs-extract)
 
+set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost
         1.72
         REQUIRED
