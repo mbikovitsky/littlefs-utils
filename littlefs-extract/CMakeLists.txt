@@ -4,7 +4,7 @@ add_executable(littlefs-extract
         FileBlockDevice.cpp FileBlockDevice.hpp)
 target_link_libraries(littlefs-extract
         PRIVATE project_options project_warnings
-                CONAN_PKG::docopt.cpp CONAN_PKG::fmt CONAN_PKG::libarchive
+                CONAN_PKG::docopt.cpp CONAN_PKG::fmt CONAN_PKG::libarchive CONAN_PKG::boost
                 littlefs1 littlefs2)
 
 if (MSVC)

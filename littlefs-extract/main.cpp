@@ -5,9 +5,8 @@
 #include <string>
 
 #include <docopt/docopt.h>
+#include <boost/lexical_cast.hpp>
 
-#include <lfs1.h>
-#include <lfs2.h>
 
 struct CommandLineOptions
 {
@@ -17,8 +16,8 @@ struct CommandLineOptions
     std::uint32_t prog_size;
     std::uint32_t filesystem_size;
     std::uint32_t file_offset;
-    std::wstring input_file_path;
-    std::wstring output_file_path;
+    std::string input_file_path;
+    std::string output_file_path;
 };
 
 static constexpr char USAGE[] =
@@ -36,24 +35,29 @@ Options:
   -b BLOCK_SIZE --block-size=BLOCK_SIZE  filesystem block size.
   -r READ_SIZE --read-size=READ_SIZE     filesystem read size.
   -p PROG_SIZE --prog-size=PROG_SIZE     filesystem prog size.
-  --filesystem-size=FS_SIZE              filesystem size [default: 0].
-  --file-offset=OFFSET                   offset within the input file where filesystem begins.
+  --filesystem-size=FS_SIZE              filesystem size. [default: 0]
+  --file-offset=OFFSET                   offset within the input file where filesystem begins. [default: 0]
   -i INPUT --input-file=INPUT            littlefs image file.
-  -o OUTPUT --output-file=OUTPUT         output tar file [default: -].
+  -o OUTPUT --output-file=OUTPUT         output tar file. [default: -]
 )";
 
 std::optional<CommandLineOptions> parse_command_line(int argc, char ** argv)
 {
-    CommandLineOptions options {};
-
     auto args = docopt::docopt(USAGE,
                                { argv + 1, argv + argc },
                                true,
                                "littlefs-extract 0.1");
-    for (auto const & argument : args)
-    {
-        std::cout << argument.first << argument.second << "\n";
-    }
+
+    CommandLineOptions options {};
+
+    options.version = boost::lexical_cast<std::uint32_t>(args.at("--littlefs-version").asString());
+    options.block_size = boost::lexical_cast<std::uint32_t>(args.at("--block-size").asString());
+    options.read_size = boost::lexical_cast<std::uint32_t>(args.at("--read-size").asString());
+    options.prog_size = boost::lexical_cast<std::uint32_t>(args.at("--prog-size").asString());
+    options.filesystem_size = boost::lexical_cast<std::uint32_t>(args.at("--filesystem-size").asString());
+    options.file_offset = boost::lexical_cast<std::uint32_t>(args.at("--file-offset").asString());
+    options.input_file_path = args.at("--input-file").asString();
+    options.output_file_path = args.at("--output-file").asString();
 
     return options;
 }
