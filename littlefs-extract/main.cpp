@@ -72,19 +72,19 @@ int wmain(int argc, wchar_t ** argv)
 int main(int argc, char ** argv)
 #endif
 {
-#if defined(_MSC_VER)
-    std::vector<std::string> arguments{};
-    arguments.reserve(argc - 1);
-    for (int index = 1; index < argc; ++index)
-    {
-        arguments.push_back(wide_char_to_utf8(argv[index]));
-    }
-#else
-    std::vector<std::string> arguments { argv + 1, argv + argc };
-#endif
-
     try
     {
+#if defined(_MSC_VER)
+        std::vector<std::string> arguments {};
+        arguments.reserve(argc - 1);
+        for (int index = 1; index < argc; ++index)
+        {
+            arguments.push_back(wide_char_to_utf8(argv[index]));
+        }
+#else
+        std::vector<std::string> arguments {argv + 1, argv + argc};
+#endif
+
         auto const options = parse_command_line(arguments);
     }
     catch (std::exception const & exception)
