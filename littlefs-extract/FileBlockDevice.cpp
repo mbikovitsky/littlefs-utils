@@ -1,16 +1,44 @@
 #include <vector>
-#include <filesystem>
 #include <stdexcept>
 #include <cstddef>
+
+#if defined(_MSC_VER)
+#include "Unicode.hpp"
+#endif
 
 #include "FileBlockDevice.hpp"
 
 
-FileBlockDevice::FileBlockDevice(std::wstring const & path,
-                                 bool writable,
-                                 std::uint32_t block_size,
-                                 std::uint32_t block_count) :
-    _filestream(_open_file(path, writable)),
+namespace {
+
+std::fstream open_file(std::string const & path, bool const writable)
+{
+    std::fstream file_stream {};
+    file_stream.exceptions(std::ios_base::badbit | std::ios_base::failbit);
+
+    auto mode = std::ios_base::binary | std::ios_base::in;
+    if (writable)
+    {
+        mode |= std::ios_base::out;
+    }
+
+#if defined(_MSC_VER)
+    file_stream.open(utf8_to_wide_char(path), mode);
+#else
+    file_stream.open(path, mode);
+#endif
+
+    return file_stream;
+}
+
+}
+
+
+FileBlockDevice::FileBlockDevice(std::string const & path,
+                                 bool const writable,
+                                 std::uint32_t const block_size,
+                                 std::uint32_t const block_count) :
+    _filestream(open_file(path, writable)),
     _block_size(block_size),
     _block_count(block_count)
 {
@@ -73,20 +101,4 @@ void FileBlockDevice::erase(std::uint32_t block)
 void FileBlockDevice::sync()
 {
     _filestream.flush();
-}
-
-std::fstream FileBlockDevice::_open_file(std::wstring const & path, bool writable)
-{
-    std::fstream file_stream {};
-    file_stream.exceptions(std::ios_base::badbit | std::ios_base::failbit);
-
-    auto mode = std::ios_base::binary | std::ios_base::in;
-    if (writable)
-    {
-        mode |= std::ios_base::out;
-    }
-
-    file_stream.open(std::filesystem::path(path), mode);
-
-    return file_stream;
 }

@@ -16,7 +16,7 @@ private:
     std::uint32_t _block_count;
 
 public:
-    FileBlockDevice(std::wstring const & path,
+    FileBlockDevice(std::string const & path,
                     bool writable,
                     std::uint32_t block_size,
                     std::uint32_t block_count);
@@ -32,9 +32,6 @@ public:
 
     [[nodiscard]] std::uint32_t block_size() const noexcept override { return _block_size; }
     [[nodiscard]] std::uint32_t block_count() const noexcept override { return _block_count; }
-
-private:
-    static std::fstream _open_file(std::wstring const & path, bool writable);
 };
 
 #endif  // FILEBLOCKDEVICE_HPP
