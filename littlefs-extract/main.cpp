@@ -3,9 +3,14 @@
 #include <iostream>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include <docopt/docopt.h>
 #include <boost/lexical_cast.hpp>
+
+#if defined(_MSC_VER)
+    #include "Unicode.hpp"
+#endif
 
 
 struct CommandLineOptions
@@ -41,10 +46,10 @@ Options:
   -o OUTPUT --output-file=OUTPUT         output tar file. [default: -]
 )";
 
-std::optional<CommandLineOptions> parse_command_line(int argc, char ** argv)
+std::optional<CommandLineOptions> parse_command_line(std::vector<std::string> const & argv)
 {
     auto args = docopt::docopt(USAGE,
-                               { argv + 1, argv + argc },
+                               argv,
                                true,
                                "littlefs-extract 0.1");
 
@@ -68,11 +73,20 @@ int wmain(int argc, wchar_t ** argv)
 int main(int argc, char ** argv)
 #endif
 {
-    // TODO: convert command-line to UTF-8
+#if defined(_MSC_VER)
+    std::vector<std::string> arguments{};
+    arguments.reserve(argc - 1);
+    for (int index = 1; index < argc; ++index)
+    {
+        arguments.push_back(wide_char_to_utf8(argv[index]));
+    }
+#else
+    std::vector<std::string> arguments { argv + 1, argv + argc };
+#endif
 
     try
     {
-        auto const options = parse_command_line(argc, argv);
+        auto const options = parse_command_line(arguments);
         if (!options)
         {
             return 1;
