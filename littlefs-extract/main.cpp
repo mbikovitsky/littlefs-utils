@@ -9,7 +9,7 @@
 #include <boost/lexical_cast.hpp>
 
 #if defined(_MSC_VER)
-    #include "Unicode.hpp"
+#include "Unicode.hpp"
 #endif
 
 
@@ -29,17 +29,17 @@ static constexpr char USAGE[] =
     R"(littlefs-extract.
 
 Usage:
-  littlefs-extract -l VERSION -b BLOCK_SIZE -r READ_SIZE -p PROG_SIZE [--filesystem-size FS_SIZE] [--file-offset OFFSET] -i INPUT [-o OUTPUT_FILE]
+  littlefs-extract [-l VERSION] [-b BLOCK_SIZE] [-r READ_SIZE] [-p PROG_SIZE] [--filesystem-size FS_SIZE] [--file-offset OFFSET] -i INPUT [-o OUTPUT_FILE]
   littlefs-extract -h | --help
   littlefs-extract -h | --version
 
 Options:
   -h --help                              Show this screen.
   -v --version                           Show version.
-  -l VERSION --littlefs-version=VERSION  littlefs version to use.
-  -b BLOCK_SIZE --block-size=BLOCK_SIZE  filesystem block size.
-  -r READ_SIZE --read-size=READ_SIZE     filesystem read size.
-  -p PROG_SIZE --prog-size=PROG_SIZE     filesystem prog size.
+  -l VERSION --littlefs-version=VERSION  littlefs version to use. [default: 2]
+  -b BLOCK_SIZE --block-size=BLOCK_SIZE  filesystem block size. [default: 512]
+  -r READ_SIZE --read-size=READ_SIZE     filesystem read size. [default: 64]
+  -p PROG_SIZE --prog-size=PROG_SIZE     filesystem prog size. [default: 64]
   --filesystem-size=FS_SIZE              filesystem size. [default: 0]
   --file-offset=OFFSET                   offset within the input file where filesystem begins. [default: 0]
   -i INPUT --input-file=INPUT            littlefs image file.
