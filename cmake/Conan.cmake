@@ -17,6 +17,6 @@ conan_cmake_run(
   CONANFILE conanfile.txt
   BASIC_SETUP
   CMAKE_TARGETS # individual targets to link to
-  BUILD
-  missing)
+  SETTINGS ${CONAN_EXTRA_SETTINGS}
+  BUILD missing)
 endmacro()

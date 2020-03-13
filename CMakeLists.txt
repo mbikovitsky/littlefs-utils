@@ -3,6 +3,14 @@ cmake_minimum_required(VERSION 3.15)
 project(littlefs-utils C CXX)
 include(cmake/StandardProjectSettings.cmake)
 
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
+  set(CONAN_EXTRA_SETTINGS "compiler.runtime=MTd")
+else()
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
+  set(CONAN_EXTRA_SETTINGS "compiler.runtime=MT")
+endif()
+
 # Link this 'library' to set the c++ standard / compile-time options requested
 add_library(project_options INTERFACE)
 target_compile_features(project_options INTERFACE cxx_std_17 c_std_99)
