@@ -18,8 +18,6 @@ struct CommandLineOptions
     std::uint32_t block_size;
     std::uint32_t read_size;
     std::uint32_t prog_size;
-    std::uint32_t filesystem_size;
-    std::uint32_t file_offset;
     std::string input_file_path;
     std::string output_file_path;
 };
@@ -28,7 +26,7 @@ static constexpr char USAGE[] =
     R"(littlefs-extract.
 
 Usage:
-  littlefs-extract [-l VERSION] [-b BLOCK_SIZE] [-r READ_SIZE] [-p PROG_SIZE] [--filesystem-size FS_SIZE] [--file-offset OFFSET] -i INPUT [-o OUTPUT_FILE]
+  littlefs-extract [-l VERSION] [-b BLOCK_SIZE] [-r READ_SIZE] [-p PROG_SIZE] -i INPUT [-o OUTPUT_FILE]
   littlefs-extract -h | --help
   littlefs-extract -h | --version
 
@@ -39,8 +37,6 @@ Options:
   -b BLOCK_SIZE --block-size=BLOCK_SIZE  filesystem block size. [default: 512]
   -r READ_SIZE --read-size=READ_SIZE     filesystem read size. [default: 64]
   -p PROG_SIZE --prog-size=PROG_SIZE     filesystem prog size. [default: 64]
-  --filesystem-size=FS_SIZE              filesystem size. [default: 0]
-  --file-offset=OFFSET                   offset within the input file where filesystem begins. [default: 0]
   -i INPUT --input-file=INPUT            littlefs image file.
   -o OUTPUT --output-file=OUTPUT         output tar file. [default: -]
 )";
@@ -58,8 +54,6 @@ CommandLineOptions parse_command_line(std::vector<std::string> const & argv)
     options.block_size = boost::lexical_cast<std::uint32_t>(args.at("--block-size").asString());
     options.read_size = boost::lexical_cast<std::uint32_t>(args.at("--read-size").asString());
     options.prog_size = boost::lexical_cast<std::uint32_t>(args.at("--prog-size").asString());
-    options.filesystem_size = boost::lexical_cast<std::uint32_t>(args.at("--filesystem-size").asString());
-    options.file_offset = boost::lexical_cast<std::uint32_t>(args.at("--file-offset").asString());
     options.input_file_path = args.at("--input-file").asString();
     options.output_file_path = args.at("--output-file").asString();
 
