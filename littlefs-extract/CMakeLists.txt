@@ -1,5 +1,6 @@
 add_executable(littlefs-extract
         main.cpp
+        Util.cpp Util.hpp
         IBlockDevice.hpp
         FileBlockDevice.cpp FileBlockDevice.hpp)
 if(MSVC)
