@@ -4,6 +4,7 @@
 #include <memory>
 #include <utility>
 #include <exception>
+#include <type_traits>
 
 #include <lfs1.h>
 #include <lfs2.h>
@@ -38,6 +39,11 @@ struct LittleFS2Traits
         return lfs2_mount(lfs2, config);
     }
 };
+
+static_assert(static_cast<std::underlying_type_t<decltype(LFS1_ERR_IO)>>(LFS1_ERR_IO) ==
+              static_cast<std::underlying_type_t<decltype(LFS2_ERR_IO)>>(LFS2_ERR_IO));
+static_assert(static_cast<std::underlying_type_t<decltype(LFS1_ERR_OK)>>(LFS1_ERR_OK) ==
+              static_cast<std::underlying_type_t<decltype(LFS2_ERR_OK)>>(LFS2_ERR_OK));
 
 template <typename Traits>
 class LittleFS
@@ -115,11 +121,9 @@ int LittleFS<Traits>::_read(typename Traits::ConfigurationType const * config,
     }
     catch (std::exception const &)
     {
-        static_assert(LFS1_ERR_IO == LFS2_ERR_IO);
         return LFS1_ERR_IO;
     }
 
-    static_assert(LFS1_ERR_OK == LFS2_ERR_OK);
     return LFS1_ERR_OK;
 }
 
@@ -138,11 +142,9 @@ int LittleFS<Traits>::_prog(typename Traits::ConfigurationType const * config,
     }
     catch (std::exception const &)
     {
-        static_assert(LFS1_ERR_IO == LFS2_ERR_IO);
         return LFS1_ERR_IO;
     }
 
-    static_assert(LFS1_ERR_OK == LFS2_ERR_OK);
     return LFS1_ERR_OK;
 }
 
@@ -158,11 +160,9 @@ int LittleFS<Traits>::_erase(typename Traits::ConfigurationType const * config,
     }
     catch (std::exception const &)
     {
-        static_assert(LFS1_ERR_IO == LFS2_ERR_IO);
         return LFS1_ERR_IO;
     }
 
-    static_assert(LFS1_ERR_OK == LFS2_ERR_OK);
     return LFS1_ERR_OK;
 }
 
@@ -177,11 +177,9 @@ int LittleFS<Traits>::_sync(typename Traits::ConfigurationType const * config) n
     }
     catch (std::exception const &)
     {
-        static_assert(LFS1_ERR_IO == LFS2_ERR_IO);
         return LFS1_ERR_IO;
     }
 
-    static_assert(LFS1_ERR_OK == LFS2_ERR_OK);
     return LFS1_ERR_OK;
 }
 
