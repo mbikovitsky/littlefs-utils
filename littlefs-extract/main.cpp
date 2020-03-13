@@ -1,7 +1,6 @@
 #include <cstdint>
 #include <exception>
 #include <iostream>
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -46,12 +45,12 @@ Options:
   -o OUTPUT --output-file=OUTPUT         output tar file. [default: -]
 )";
 
-std::optional<CommandLineOptions> parse_command_line(std::vector<std::string> const & argv)
+CommandLineOptions parse_command_line(std::vector<std::string> const & argv)
 {
     auto args = docopt::docopt(USAGE,
                                argv,
                                true,
-                               "littlefs-extract 0.1");
+                               "littlefs-extract v0.1");
 
     CommandLineOptions options {};
 
@@ -87,10 +86,6 @@ int main(int argc, char ** argv)
     try
     {
         auto const options = parse_command_line(arguments);
-        if (!options)
-        {
-            return 1;
-        }
     }
     catch (std::exception const & exception)
     {
