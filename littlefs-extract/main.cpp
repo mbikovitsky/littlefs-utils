@@ -3,9 +3,16 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
+#include <utility>
+#include <stdexcept>
+#include <limits>
 
 #include <docopt/docopt.h>
 #include <boost/lexical_cast.hpp>
+
+#include "Util.hpp"
+#include "FileBlockDevice.hpp"
 
 #if defined(_MSC_VER)
 #include "Unicode.hpp"
@@ -80,6 +87,24 @@ int main(int argc, char ** argv)
 #endif
 
         auto const options = parse_command_line(arguments);
+
+        auto const image_size = file_size(options.input_file_path);
+        if (image_size % options.block_size != 0)
+        {
+            throw std::runtime_error("Invalid block size");
+        }
+
+        auto const block_count = image_size / options.block_size;
+
+        if (block_count > std::numeric_limits<std::uint32_t>::max())
+        {
+            throw std::runtime_error("Image too large");
+        }
+
+        auto image_file = std::make_unique<FileBlockDevice>(options.input_file_path,
+                                                            false,
+                                                            options.block_size,
+                                                            static_cast<std::uint32_t>(block_count));
     }
     catch (std::exception const & exception)
     {
