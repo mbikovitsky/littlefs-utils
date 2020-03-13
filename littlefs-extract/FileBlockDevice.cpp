@@ -42,16 +42,6 @@ FileBlockDevice::FileBlockDevice(std::string const & path,
     _block_size(block_size),
     _block_count(block_count)
 {
-    // For non-writable files, the block size and count should cover the whole file.
-    if (!writable)
-    {
-        _filestream.seekg(0, std::ios_base::end);
-        auto const size = _filestream.tellg();
-        if (0 != size % block_size || block_count != size / block_size)
-        {
-            throw std::runtime_error("Invalid block size");
-        }
-    }
 }
 
 void FileBlockDevice::read(std::uint32_t block, std::uint32_t offset, void * buffer, std::uint32_t size)
