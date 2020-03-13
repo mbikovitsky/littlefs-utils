@@ -13,6 +13,7 @@
 
 #include "Util.hpp"
 #include "FileBlockDevice.hpp"
+#include "LittleFS.hpp"
 
 #if defined(_MSC_VER)
 #include "Unicode.hpp"
@@ -117,6 +118,10 @@ int main(int argc, char ** argv)
                                                             false,
                                                             options->block_size,
                                                             static_cast<std::uint32_t>(block_count));
+
+        LittleFS1 filesystem(std::move(image_file),
+                             options->read_size,
+                             options->prog_size);
     }
     catch (std::exception const & exception)
     {
