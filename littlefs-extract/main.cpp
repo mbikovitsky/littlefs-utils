@@ -38,7 +38,7 @@ std::optional<CommandLineOptions> parse_command_line(std::vector<std::string> co
 {
     po::options_description desc("Allowed options");
     desc.add_options()
-        ("help", "produce help message")
+        ("help,h", "produce help message")
         ("version,v", "show version")
         ("littlefs-version,l", po::value<std::uint32_t>()->default_value(2), "littlefs version to use")
         ("block-size,b", po::value<std::uint32_t>()->default_value(512), "filesystem block size")
