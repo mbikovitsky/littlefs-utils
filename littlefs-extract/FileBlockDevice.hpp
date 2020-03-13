@@ -8,7 +8,7 @@
 #include "IBlockDevice.hpp"
 
 
-class FileBlockDevice : IBlockDevice
+class FileBlockDevice : public IBlockDevice
 {
 private:
     std::fstream _filestream;
