@@ -10,7 +10,7 @@ endif(MSVC)
 
 target_link_libraries(littlefs-extract
         PRIVATE project_options project_warnings
-                CONAN_PKG::docopt.cpp CONAN_PKG::libarchive CONAN_PKG::boost
+                CONAN_PKG::libarchive CONAN_PKG::boost
                 littlefs1 littlefs2)
 
 if (MSVC)
