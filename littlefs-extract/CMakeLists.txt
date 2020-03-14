@@ -9,7 +9,7 @@ endif (MSVC)
 
 target_link_libraries(littlefs-extract
     PRIVATE project_options project_warnings
-            CONAN_PKG::libarchive CONAN_PKG::boost CONAN_PKG::fmt
+            CONAN_PKG::libarchive CONAN_PKG::boost
             littlefs)
 
 if (MSVC)
