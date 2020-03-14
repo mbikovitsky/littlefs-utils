@@ -1,9 +1,9 @@
+#include "Unicode.hpp"
+
 #include <stdexcept>
 #include <vector>
 
 #include <Windows.h>
-
-#include "Unicode.hpp"
 
 
 std::string wide_char_to_utf8(std::wstring const & string)

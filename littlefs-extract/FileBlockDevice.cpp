@@ -1,3 +1,5 @@
+#include "FileBlockDevice.hpp"
+
 #include <cstddef>
 #include <stdexcept>
 #include <vector>
@@ -5,8 +7,6 @@
 #if defined(_MSC_VER)
     #include "Unicode.hpp"
 #endif
-
-#include "FileBlockDevice.hpp"
 
 
 namespace {
