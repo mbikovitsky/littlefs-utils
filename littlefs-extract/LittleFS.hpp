@@ -2,6 +2,8 @@
 
 #include <exception>
 #include <memory>
+#include <string>
+#include <system_error>
 #include <type_traits>
 #include <utility>
 
@@ -9,6 +11,8 @@
 #include <lfs2.h>
 
 #include "IBlockDevice.hpp"
+
+#include "LittleFSErrorCategory.hpp"
 
 
 struct LittleFS1Traits
@@ -61,6 +65,7 @@ private:
     std::unique_ptr<IBlockDevice> _block_device;
     typename Traits::ConfigurationType _config;
     typename Traits::FileSystemType _filesystem;
+    bool _mounted;
 
 public:
     explicit LittleFS(std::unique_ptr<IBlockDevice> block_device,
@@ -86,7 +91,8 @@ private:
                      void const * buffer,
                      typename Traits::SizeType size) noexcept;
 
-    static int _erase(typename Traits::ConfigurationType const * config, typename Traits::BlockType block) noexcept;
+    static int _erase(typename Traits::ConfigurationType const * config,
+                      typename Traits::BlockType block) noexcept;
 
     static int _sync(typename Traits::ConfigurationType const * config) noexcept;
 };
@@ -98,7 +104,8 @@ LittleFS<Traits>::LittleFS(std::unique_ptr<IBlockDevice> block_device,
                            typename Traits::SizeType lookahead) :
     _block_device(std::move(block_device)),
     _config(),
-    _filesystem()
+    _filesystem(),
+    _mounted(false)
 {
     _config.context = this;
     _config.read = &_read;
@@ -111,13 +118,22 @@ LittleFS<Traits>::LittleFS(std::unique_ptr<IBlockDevice> block_device,
     _config.block_count = _block_device->block_count();
     _config.lookahead = lookahead;
 
-    Traits::mount(&_filesystem, &_config);
+    auto const result = Traits::mount(&_filesystem, &_config);
+    if (0 != result)
+    {
+        throw std::system_error(result, littlefs_category(), "mount");
+    }
+    _mounted = true;
 }
 
 template <typename Traits>
 LittleFS<Traits>::~LittleFS()
 {
-    Traits::unmount(&_filesystem);
+    if (_mounted)
+    {
+        Traits::unmount(&_filesystem);
+        _mounted = false;
+    }
 }
 
 template <typename Traits>

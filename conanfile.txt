@@ -1,6 +1,7 @@
 [requires]
 libarchive/3.4.0
 boost/1.72.0
+fmt/6.1.2
 
 [options]
 
