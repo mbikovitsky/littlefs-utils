@@ -12,12 +12,13 @@
 #include <boost/program_options.hpp>
 
 #include "FileBlockDevice.hpp"
-#include "LittleFS.hpp"
 #include "Util.hpp"
 
 #if defined(_MSC_VER)
     #include "Unicode.hpp"
 #endif
+
+#include <LittleFS1.hpp>
 
 
 struct CommandLineOptions

@@ -62,4 +62,5 @@ run_conan()
 
 add_subdirectory(littlefs1)
 add_subdirectory(littlefs2)
+add_subdirectory(littlefs)
 add_subdirectory(littlefs-extract)
