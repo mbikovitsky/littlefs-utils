@@ -28,7 +28,7 @@ public:
     LittleFS1(LittleFS1 const &) = delete;
     LittleFS1 & operator=(LittleFS1 const &) = delete;
 
-    std::vector<LittleFS::FileInfo> list_directory(std::string const & path) override;
+    std::vector<LittleFS::DirectoryEntry> list_directory(std::string const & path) override;
 
 private:
     static int _read(lfs1_config const * config,

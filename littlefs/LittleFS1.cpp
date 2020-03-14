@@ -42,9 +42,9 @@ LittleFS1::~LittleFS1()
     }
 }
 
-std::vector<LittleFS::FileInfo> LittleFS1::list_directory(std::string const & path)
+std::vector<LittleFS::DirectoryEntry> LittleFS1::list_directory(std::string const & path)
 {
-    std::vector<LittleFS::FileInfo> output {};
+    std::vector<LittleFS::DirectoryEntry> output {};
 
     lfs1_dir_t directory {};
     auto result = lfs1_dir_open(&_filesystem, &directory, path.c_str());
