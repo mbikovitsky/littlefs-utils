@@ -76,10 +76,43 @@ std::optional<CommandLineOptions> parse_command_line(std::vector<std::string> co
     return options;
 }
 
+int entry_point(std::vector<std::string> const & argv)
+{
+    auto const options = parse_command_line(argv);
+    if (!options)
+    {
+        return 1;
+    }
+
+    auto const image_size = file_size(options->input_file_path);
+    if (image_size % options->block_size != 0)
+    {
+        throw std::runtime_error("Invalid block size");
+    }
+
+    auto const block_count = image_size / options->block_size;
+
+    if (block_count > std::numeric_limits<std::uint32_t>::max())
+    {
+        throw std::runtime_error("Image too large");
+    }
+
+    auto image_file = std::make_unique<FileBlockDevice>(options->input_file_path,
+                                                        false,
+                                                        options->block_size,
+                                                        static_cast<std::uint32_t>(block_count));
+
+    LittleFS1 filesystem(std::move(image_file),
+                         options->read_size,
+                         options->prog_size);
+
+    return 0;
+}
+
 #if defined(_MSC_VER)
-int wmain(int argc, wchar_t ** argv)
+int wmain(int argc, wchar_t ** argv) noexcept
 #else
-int main(int argc, char ** argv)
+int main(int argc, char ** argv) noexcept
 #endif
 {
     try
@@ -95,33 +128,7 @@ int main(int argc, char ** argv)
         std::vector<std::string> arguments {argv + 1, argv + argc};
 #endif
 
-        auto const options = parse_command_line(arguments);
-        if (!options)
-        {
-            return 1;
-        }
-
-        auto const image_size = file_size(options->input_file_path);
-        if (image_size % options->block_size != 0)
-        {
-            throw std::runtime_error("Invalid block size");
-        }
-
-        auto const block_count = image_size / options->block_size;
-
-        if (block_count > std::numeric_limits<std::uint32_t>::max())
-        {
-            throw std::runtime_error("Image too large");
-        }
-
-        auto image_file = std::make_unique<FileBlockDevice>(options->input_file_path,
-                                                            false,
-                                                            options->block_size,
-                                                            static_cast<std::uint32_t>(block_count));
-
-        LittleFS1 filesystem(std::move(image_file),
-                             options->read_size,
-                             options->prog_size);
+        return entry_point(arguments);
     }
     catch (std::exception const & exception)
     {
