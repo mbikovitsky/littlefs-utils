@@ -24,6 +24,11 @@ struct LittleFS1Traits
     {
         return lfs1_mount(lfs1, config);
     }
+
+    static int unmount(lfs1_t * lfs1)
+    {
+        return lfs1_unmount(lfs1);
+    }
 };
 
 struct LittleFS2Traits
@@ -37,6 +42,11 @@ struct LittleFS2Traits
     static int mount(lfs2_t * lfs2, const struct lfs2_config * config)
     {
         return lfs2_mount(lfs2, config);
+    }
+
+    static int unmount(lfs2_t * lfs2)
+    {
+        return lfs2_unmount(lfs2);
     }
 };
 
@@ -59,7 +69,7 @@ public:
                       typename Traits::SizeType program_size,
                       typename Traits::SizeType lookahead = 128);
 
-    virtual ~LittleFS() = default;
+    virtual ~LittleFS();
 
     LittleFS(LittleFS const &) = delete;
     LittleFS & operator=(LittleFS const &) = delete;
@@ -104,6 +114,12 @@ LittleFS<Traits>::LittleFS(std::unique_ptr<IBlockDevice> block_device,
     _config.lookahead = lookahead;
 
     Traits::mount(&_filesystem, &_config);
+}
+
+template <typename Traits>
+LittleFS<Traits>::~LittleFS()
+{
+    Traits::unmount(&_filesystem);
 }
 
 template <typename Traits>
