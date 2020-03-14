@@ -6,6 +6,7 @@
 #include <system_error>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include <lfs1.h>
 #include <lfs2.h>
@@ -19,18 +20,37 @@ struct LittleFS1Traits
 {
     using ConfigurationType = lfs1_config;
     using FileSystemType = lfs1_t;
+
     using SizeType = lfs1_size_t;
     using BlockType = lfs1_block_t;
     using OffsetType = lfs1_off_t;
 
-    static int mount(lfs1_t * lfs1, const struct lfs1_config * config)
+    using DirType = lfs1_dir_t;
+    using FileInfoType = lfs1_info;
+
+    static int mount(lfs1_t * lfs1, lfs1_config const * config) noexcept
     {
         return lfs1_mount(lfs1, config);
     }
 
-    static int unmount(lfs1_t * lfs1)
+    static int unmount(lfs1_t * lfs1) noexcept
     {
         return lfs1_unmount(lfs1);
+    }
+
+    static int dir_open(lfs1_t * lfs1, lfs1_dir_t * dir, char const * path) noexcept
+    {
+        return lfs1_dir_open(lfs1, dir, path);
+    }
+
+    static int dir_close(lfs1_t * lfs1, lfs1_dir_t * dir) noexcept
+    {
+        return lfs1_dir_close(lfs1, dir);
+    }
+
+    static int dir_read(lfs1_t * lfs1, lfs1_dir_t * dir, lfs1_info * info) noexcept
+    {
+        return lfs1_dir_read(lfs1, dir, info);
     }
 };
 
@@ -38,18 +58,37 @@ struct LittleFS2Traits
 {
     using ConfigurationType = lfs2_config;
     using FileSystemType = lfs2_t;
+
     using SizeType = lfs2_size_t;
     using BlockType = lfs2_block_t;
     using OffsetType = lfs2_off_t;
 
-    static int mount(lfs2_t * lfs2, const struct lfs2_config * config)
+    using DirType = lfs2_dir_t;
+    using FileInfoType = lfs2_info;
+
+    static int mount(lfs2_t * lfs2, lfs2_config const * config) noexcept
     {
         return lfs2_mount(lfs2, config);
     }
 
-    static int unmount(lfs2_t * lfs2)
+    static int unmount(lfs2_t * lfs2) noexcept
     {
         return lfs2_unmount(lfs2);
+    }
+
+    static int dir_open(lfs2_t * lfs2, lfs2_dir_t * dir, char const * path) noexcept
+    {
+        return lfs2_dir_open(lfs2, dir, path);
+    }
+
+    static int dir_close(lfs2_t * lfs2, lfs2_dir_t * dir) noexcept
+    {
+        return lfs2_dir_close(lfs2, dir);
+    }
+
+    static int dir_read(lfs2_t * lfs2, lfs2_dir_t * dir, lfs2_info * info) noexcept
+    {
+        return lfs2_dir_read(lfs2, dir, info);
     }
 };
 
@@ -61,6 +100,14 @@ static_assert(static_cast<std::underlying_type_t<decltype(LFS1_ERR_OK)>>(LFS1_ER
 template <typename Traits>
 class LittleFS
 {
+public:
+    struct FileInfo
+    {
+        std::string name {};
+        bool is_directory {};
+        typename Traits::SizeType size {};
+    };
+
 private:
     std::unique_ptr<IBlockDevice> _block_device;
     typename Traits::ConfigurationType _config;
@@ -77,6 +124,8 @@ public:
 
     LittleFS(LittleFS const &) = delete;
     LittleFS & operator=(LittleFS const &) = delete;
+
+    std::vector<FileInfo> list_directory(std::string const & path);
 
 private:
     static int _read(typename Traits::ConfigurationType const * config,
@@ -119,7 +168,7 @@ LittleFS<Traits>::LittleFS(std::unique_ptr<IBlockDevice> block_device,
     _config.lookahead = lookahead;
 
     auto const result = Traits::mount(&_filesystem, &_config);
-    if (0 != result)
+    if (result < 0)
     {
         throw std::system_error(result, littlefs_category(), "mount");
     }
@@ -134,6 +183,46 @@ LittleFS<Traits>::~LittleFS()
         Traits::unmount(&_filesystem);
         _mounted = false;
     }
+}
+
+template <typename Traits>
+std::vector<typename LittleFS<Traits>::FileInfo>
+    LittleFS<Traits>::list_directory(std::string const & path)
+{
+    std::vector<FileInfo> output {};
+
+    typename Traits::DirType directory {};
+    auto result = Traits::dir_open(&_filesystem, &directory, path.c_str());
+    if (result < 0)
+    {
+        throw std::system_error(result, littlefs_category(), "dir_open");
+    }
+    try
+    {
+        for (;;)
+        {
+            typename Traits::FileInfoType info {};
+            result = Traits::dir_read(&_filesystem, &directory, &info);
+            if (result < 0)
+            {
+                throw std::system_error(result, littlefs_category(), "dir_read");
+            }
+            if (0 == result)
+            {
+                break;
+            }
+
+            output.push_back({info.name, info.type == LFS1_TYPE_DIR, info.size});
+        }
+    }
+    catch (...)
+    {
+        Traits::dir_close(&_filesystem, &directory);
+        throw;
+    }
+    Traits::dir_close(&_filesystem, &directory);
+
+    return output;
 }
 
 template <typename Traits>
