@@ -1,5 +1,4 @@
-#ifndef LITTLEFS_HPP
-#define LITTLEFS_HPP
+#pragma once
 
 #include <exception>
 #include <memory>
@@ -201,5 +200,3 @@ int LittleFS<Traits>::_sync(typename Traits::ConfigurationType const * config) n
 
 using LittleFS1 = LittleFS<LittleFS1Traits>;
 using LittleFS2 = LittleFS<LittleFS2Traits>;
-
-#endif  // LITTLEFS_HPP

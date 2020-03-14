@@ -1,5 +1,4 @@
-#ifndef FILEBLOCKDEVICE_HPP
-#define FILEBLOCKDEVICE_HPP
+#pragma once
 
 #include <cstdint>
 #include <fstream>
@@ -44,5 +43,3 @@ public:
         return _block_count;
     }
 };
-
-#endif  // FILEBLOCKDEVICE_HPP

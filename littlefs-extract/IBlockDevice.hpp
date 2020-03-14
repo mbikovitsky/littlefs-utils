@@ -1,5 +1,4 @@
-#ifndef IBLOCKDEVICE_HPP
-#define IBLOCKDEVICE_HPP
+#pragma once
 
 #include <cstdint>
 
@@ -21,5 +20,3 @@ public:
     [[nodiscard]] virtual std::uint32_t block_size() const noexcept = 0;
     [[nodiscard]] virtual std::uint32_t block_count() const noexcept = 0;
 };
-
-#endif  // IBLOCKDEVICE_HPP
