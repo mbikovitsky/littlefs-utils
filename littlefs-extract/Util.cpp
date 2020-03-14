@@ -1,7 +1,7 @@
 #include <filesystem>
 
 #if defined(_MSC_VER)
-#include "Unicode.hpp"
+    #include "Unicode.hpp"
 #endif
 
 #include "Util.hpp"

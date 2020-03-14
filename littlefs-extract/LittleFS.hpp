@@ -1,10 +1,10 @@
 #ifndef LITTLEFS_HPP
 #define LITTLEFS_HPP
 
-#include <memory>
-#include <utility>
 #include <exception>
+#include <memory>
 #include <type_traits>
+#include <utility>
 
 #include <lfs1.h>
 #include <lfs2.h>
@@ -50,10 +50,10 @@ struct LittleFS2Traits
     }
 };
 
-static_assert(static_cast<std::underlying_type_t<decltype(LFS1_ERR_IO)>>(LFS1_ERR_IO) ==
-              static_cast<std::underlying_type_t<decltype(LFS2_ERR_IO)>>(LFS2_ERR_IO));
-static_assert(static_cast<std::underlying_type_t<decltype(LFS1_ERR_OK)>>(LFS1_ERR_OK) ==
-              static_cast<std::underlying_type_t<decltype(LFS2_ERR_OK)>>(LFS2_ERR_OK));
+static_assert(static_cast<std::underlying_type_t<decltype(LFS1_ERR_IO)>>(LFS1_ERR_IO)
+              == static_cast<std::underlying_type_t<decltype(LFS2_ERR_IO)>>(LFS2_ERR_IO));
+static_assert(static_cast<std::underlying_type_t<decltype(LFS1_ERR_OK)>>(LFS1_ERR_OK)
+              == static_cast<std::underlying_type_t<decltype(LFS2_ERR_OK)>>(LFS2_ERR_OK));
 
 template <typename Traits>
 class LittleFS
@@ -87,8 +87,7 @@ private:
                      void const * buffer,
                      typename Traits::SizeType size) noexcept;
 
-    static int _erase(typename Traits::ConfigurationType const * config,
-                      typename Traits::BlockType block) noexcept;
+    static int _erase(typename Traits::ConfigurationType const * config, typename Traits::BlockType block) noexcept;
 
     static int _sync(typename Traits::ConfigurationType const * config) noexcept;
 };

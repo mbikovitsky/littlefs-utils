@@ -1,9 +1,9 @@
-#include <vector>
-#include <stdexcept>
 #include <cstddef>
+#include <stdexcept>
+#include <vector>
 
 #if defined(_MSC_VER)
-#include "Unicode.hpp"
+    #include "Unicode.hpp"
 #endif
 
 #include "FileBlockDevice.hpp"
@@ -31,7 +31,7 @@ std::fstream open_file(std::string const & path, bool const writable)
     return file_stream;
 }
 
-}
+}  // namespace
 
 
 FileBlockDevice::FileBlockDevice(std::string const & path,
@@ -44,7 +44,10 @@ FileBlockDevice::FileBlockDevice(std::string const & path,
 {
 }
 
-void FileBlockDevice::read(std::uint32_t block, std::uint32_t offset, void * buffer, std::uint32_t size)
+void FileBlockDevice::read(std::uint32_t block,
+                           std::uint32_t offset,
+                           void * buffer,
+                           std::uint32_t size)
 {
     if (block >= _block_count)
     {
@@ -57,13 +60,17 @@ void FileBlockDevice::read(std::uint32_t block, std::uint32_t offset, void * buf
     }
 
     auto const file_position =
-        static_cast<std::size_t>(block) * static_cast<std::size_t>(_block_size) + static_cast<std::size_t>(offset);
+        static_cast<std::size_t>(block) * static_cast<std::size_t>(_block_size)
+        + static_cast<std::size_t>(offset);
     _filestream.seekg(static_cast<std::ifstream::off_type>(file_position), std::ios_base::beg);
 
     _filestream.read(static_cast<char *>(buffer), size);
 }
 
-void FileBlockDevice::program(std::uint32_t block, std::uint32_t offset, void const * buffer, std::uint32_t size)
+void FileBlockDevice::program(std::uint32_t block,
+                              std::uint32_t offset,
+                              void const * buffer,
+                              std::uint32_t size)
 {
     if (block >= _block_count)
     {
@@ -76,7 +83,8 @@ void FileBlockDevice::program(std::uint32_t block, std::uint32_t offset, void co
     }
 
     auto const file_position =
-        static_cast<std::size_t>(block) * static_cast<std::size_t>(_block_size) + static_cast<std::size_t>(offset);
+        static_cast<std::size_t>(block) * static_cast<std::size_t>(_block_size)
+        + static_cast<std::size_t>(offset);
     _filestream.seekp(static_cast<std::ifstream::off_type>(file_position), std::ios_base::beg);
 
     _filestream.write(static_cast<char const *>(buffer), size);

@@ -1,22 +1,22 @@
 #include <cstdint>
 #include <exception>
 #include <iostream>
-#include <string>
-#include <vector>
-#include <memory>
-#include <utility>
-#include <stdexcept>
 #include <limits>
+#include <memory>
 #include <optional>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <boost/program_options.hpp>
 
-#include "Util.hpp"
 #include "FileBlockDevice.hpp"
 #include "LittleFS.hpp"
+#include "Util.hpp"
 
 #if defined(_MSC_VER)
-#include "Unicode.hpp"
+    #include "Unicode.hpp"
 #endif
 
 
@@ -102,9 +102,7 @@ int entry_point(std::vector<std::string> const & argv)
                                                         options->block_size,
                                                         static_cast<std::uint32_t>(block_count));
 
-    LittleFS1 filesystem(std::move(image_file),
-                         options->read_size,
-                         options->prog_size);
+    LittleFS1 filesystem(std::move(image_file), options->read_size, options->prog_size);
 
     return 0;
 }
