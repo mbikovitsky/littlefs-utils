@@ -1,7 +1,8 @@
 add_executable(littlefs-extract
     main.cpp
     Util.cpp Util.hpp
-    FileBlockDevice.cpp FileBlockDevice.hpp)
+    FileBlockDevice.cpp FileBlockDevice.hpp
+    CFile.cpp CFile.hpp)
 if (MSVC)
     target_sources(littlefs-extract
         PRIVATE Unicode.cpp Unicode.hpp)
