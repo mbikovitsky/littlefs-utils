@@ -60,8 +60,19 @@ CFile::CFile(gsl::not_null<std::FILE *> handle) : _handle(handle)
 
 CFile::~CFile()
 {
-    std::fclose(_handle);
-    _handle = nullptr;
+    _destroy();
+}
+
+CFile::CFile(CFile && other) noexcept : _handle(other._release())
+{
+}
+
+CFile & CFile::operator=(CFile && other) noexcept
+{
+    _destroy();
+    _handle = other._release();
+
+    return *this;
 }
 
 CFile CFile::standard_input()
@@ -77,4 +88,20 @@ CFile CFile::standard_output()
 CFile CFile::standard_error()
 {
     return CFile(gsl::not_null(duplicate_file_handle(gsl::not_null(stderr), gsl::not_null("w"))));
+}
+
+std::FILE * CFile::_release() noexcept
+{
+    auto const handle = _handle;
+    _handle = nullptr;
+    return handle;
+}
+
+void CFile::_destroy() noexcept
+{
+    if (nullptr != _handle)
+    {
+        std::fclose(_handle);
+        _handle = nullptr;
+    }
 }
