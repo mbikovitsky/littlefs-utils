@@ -2,6 +2,7 @@
 
 #include <cstdio>
 #include <type_traits>
+#include <string>
 
 #include <gsl/gsl>
 
@@ -13,6 +14,7 @@ private:
 
 public:
     explicit CFile(gsl::not_null<std::FILE *> handle);
+    CFile(std::string const & path, std::string const & mode);
 
     virtual ~CFile();
 

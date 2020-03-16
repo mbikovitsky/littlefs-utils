@@ -12,6 +12,10 @@
 
 #include <gsl/gsl>
 
+#if defined(_MSC_VER)
+    #include "Unicode.hpp"
+#endif
+
 
 #if defined(_MSC_VER)
     #define fileno _fileno
@@ -23,7 +27,8 @@
 
 namespace {
 
-FILE * duplicate_file_handle(gsl::not_null<std::FILE *> handle, gsl::not_null<gsl::czstring<>> mode)
+gsl::owner<FILE *> duplicate_file_handle(gsl::not_null<std::FILE *> handle,
+                                         gsl::not_null<gsl::czstring<>> mode)
 {
     auto const original_fd = fileno(handle);
 
@@ -51,10 +56,37 @@ FILE * duplicate_file_handle(gsl::not_null<std::FILE *> handle, gsl::not_null<gs
     return new_handle;
 }
 
+gsl::owner<FILE *> open_file(std::string const & path, std::string const & mode)
+{
+    std::FILE * handle = nullptr;
+
+#if defined(_MSC_VER)
+    // The mode is not technically UTF-8, just plain ASCII :)
+    auto const error =
+        _wfopen_s(&handle, utf8_to_wide_char(path).c_str(), utf8_to_wide_char(mode).c_str());
+    if (0 != error)
+    {
+        throw std::system_error(error, std::system_category(), "_wfopen_s");
+    }
+#else
+    handle = std::fopen(path.c_str(), mode.c_str());
+    if (nullptr == handle)
+    {
+        throw std::system_error(errno, std::system_category(), "std::fopen");
+    }
+#endif
+
+    return handle;
+}
+
 }  // namespace
 
 
 CFile::CFile(gsl::not_null<std::FILE *> handle) : _handle(handle)
+{
+}
+
+CFile::CFile(std::string const & path, std::string const & mode) : _handle(open_file(path, mode))
 {
 }
 
