@@ -12,7 +12,9 @@
 #include <boost/program_options.hpp>
 #include <gsl/gsl>
 
+#include "CFile.hpp"
 #include "FileBlockDevice.hpp"
+#include "OutputArchive.hpp"
 #include "Util.hpp"
 
 #if defined(_MSC_VER)
@@ -107,6 +109,17 @@ int entry_point(std::vector<std::string> const & argv)
                                                         static_cast<std::uint32_t>(block_count));
 
     LittleFS1 filesystem(std::move(image_file), options->read_size, options->prog_size);
+
+    CFile output_file = options->output_file_path == "-" ? CFile::standard_output()
+                                                         : CFile(options->output_file_path, "w");
+
+    OutputArchive archive(std::move(output_file), ARCHIVE_FORMAT_TAR_PAX_RESTRICTED);
+
+    for (auto const & file_info : filesystem.recursive_dirlist("/"))
+    {
+        auto const file_data = filesystem.read_file(file_info.path);
+        archive.add_file(file_info.path.substr(1), file_data, 0644);
+    }
 
     return 0;
 }
