@@ -1,5 +1,6 @@
 #include "LittleFS1.hpp"
 
+#include <cstddef>
 #include <system_error>
 
 #include <gsl/gsl>
@@ -81,6 +82,43 @@ std::vector<LittleFS::DirectoryEntry> LittleFS1::list_directory(std::string cons
     lfs1_dir_close(&_filesystem, &directory);
 
     return output;
+}
+
+std::vector<std::byte> LittleFS1::read_file(std::string const & path)
+{
+    lfs1_file_t file {};
+    auto result = lfs1_file_open(&_filesystem, &file, path.c_str(), LFS1_O_RDONLY);
+    if (result < 0)
+    {
+        throw std::system_error(result, littlefs_category(), "lfs1_file_open");
+    }
+
+    try
+    {
+        auto const size = lfs1_file_size(&_filesystem, &file);
+        if (size < 0)
+        {
+            throw std::system_error(size, littlefs_category(), "lfs1_file_size");
+        }
+
+        std::vector<std::byte> data(static_cast<std::size_t>(size));
+
+        auto const read =
+            lfs1_file_read(&_filesystem, &file, data.data(), static_cast<lfs1_size_t>(size));
+        if (read < 0)
+        {
+            throw std::system_error(read, littlefs_category(), "lfs1_file_read");
+        }
+
+        lfs1_file_close(&_filesystem, &file);
+
+        return data;
+    }
+    catch (...)
+    {
+        lfs1_file_close(&_filesystem, &file);
+        throw;
+    }
 }
 
 int LittleFS1::_read(lfs1_config const * config,

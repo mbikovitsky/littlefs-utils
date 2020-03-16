@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -29,6 +30,7 @@ public:
     virtual ~LittleFS() = default;
 
     virtual std::vector<DirectoryEntry> list_directory(std::string const & path) = 0;
+    virtual std::vector<std::byte> read_file(std::string const & path) = 0;
 
     std::vector<FileInfo> recursive_dirlist(std::string const & path);
 };

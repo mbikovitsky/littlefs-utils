@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <memory>
 #include <vector>
 
@@ -29,6 +30,7 @@ public:
     LittleFS1 & operator=(LittleFS1 const &) = delete;
 
     std::vector<LittleFS::DirectoryEntry> list_directory(std::string const & path) override;
+    std::vector<std::byte> read_file(std::string const & path) override;
 
 private:
     static int _read(lfs1_config const * config,
