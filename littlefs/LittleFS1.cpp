@@ -2,6 +2,8 @@
 
 #include <system_error>
 
+#include <gsl/span>
+
 #include "LittleFSErrorCategory.hpp"
 
 
@@ -67,7 +69,8 @@ std::vector<LittleFS::DirectoryEntry> LittleFS1::list_directory(std::string cons
                 break;
             }
 
-            output.push_back({info.name, info.type == LFS1_TYPE_DIR, info.size});
+            output.push_back(
+                {gsl::span<char>(info.name).data(), info.type == LFS1_TYPE_DIR, info.size});
         }
     }
     catch (...)

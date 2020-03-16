@@ -10,6 +10,7 @@
 #include <vector>
 
 #include <boost/program_options.hpp>
+#include <gsl/span>
 
 #include "FileBlockDevice.hpp"
 #include "Util.hpp"
@@ -124,7 +125,8 @@ int main(int argc, char ** argv) noexcept
             arguments.push_back(wide_char_to_utf8(argv[index]));
         }
 #else
-        std::vector<std::string> arguments {argv + 1, argv + argc};
+        auto const arguments_span = gsl::span<char *>(argv, argc).subspan(1);
+        std::vector<std::string> arguments(arguments_span.cbegin(), arguments_span.cend());
 #endif
 
         return entry_point(arguments);
