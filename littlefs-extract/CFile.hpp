@@ -39,6 +39,6 @@ public:
     static CFile standard_error();
 
 private:
-    std::FILE * _release() noexcept;
+    [[nodiscard]] gsl::owner<std::FILE *> _release() noexcept;
     void _destroy() noexcept;
 };

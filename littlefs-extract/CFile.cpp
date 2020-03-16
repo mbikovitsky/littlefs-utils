@@ -90,9 +90,9 @@ CFile CFile::standard_error()
     return CFile(gsl::not_null(duplicate_file_handle(gsl::not_null(stderr), gsl::not_null("w"))));
 }
 
-std::FILE * CFile::_release() noexcept
+gsl::owner<std::FILE *> CFile::_release() noexcept
 {
-    auto const handle = _handle;
+    gsl::owner<std::FILE *> const handle = _handle;
     _handle = nullptr;
     return handle;
 }
