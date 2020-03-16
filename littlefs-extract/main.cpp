@@ -52,12 +52,12 @@ std::optional<CommandLineOptions> parse_command_line(std::vector<std::string> co
     po::variables_map vm {};
     po::store(po::basic_command_line_parser(argv).options(desc).run(), vm);
 
-    if (vm.count("help"))
+    if (0 != vm.count("help"))
     {
         std::cout << desc << "\n";
         return {};
     }
-    if (vm.count("version"))
+    if (0 != vm.count("version"))
     {
         std::cout << "littlefs-extract v0.1\n";
         return {};
