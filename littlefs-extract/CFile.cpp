@@ -75,6 +75,11 @@ CFile & CFile::operator=(CFile && other) noexcept
     return *this;
 }
 
+std::FILE * CFile::handle() const noexcept
+{
+    return _handle;
+}
+
 CFile CFile::standard_input()
 {
     return CFile(gsl::not_null(duplicate_file_handle(gsl::not_null(stdin), gsl::not_null("r"))));

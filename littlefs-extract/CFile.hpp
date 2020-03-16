@@ -34,6 +34,8 @@ public:
         return std::fwrite(buffer.data(), sizeof(T), buffer.size(), _handle);
     }
 
+    [[nodiscard]] std::FILE * handle() const noexcept;
+
     static CFile standard_input();
     static CFile standard_output();
     static CFile standard_error();
