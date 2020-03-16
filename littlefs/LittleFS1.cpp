@@ -89,7 +89,7 @@ int LittleFS1::_read(lfs1_config const * config,
                      void * buffer,
                      lfs1_size_t size) noexcept
 {
-    auto * instance = reinterpret_cast<LittleFS1 *>(config->context);
+    auto * instance = static_cast<LittleFS1 *>(config->context);
 
     try
     {
@@ -109,7 +109,7 @@ int LittleFS1::_prog(lfs1_config const * config,
                      void const * buffer,
                      lfs1_size_t size) noexcept
 {
-    auto * instance = reinterpret_cast<LittleFS1 *>(config->context);
+    auto * instance = static_cast<LittleFS1 *>(config->context);
 
     try
     {
@@ -125,7 +125,7 @@ int LittleFS1::_prog(lfs1_config const * config,
 
 int LittleFS1::_erase(lfs1_config const * config, lfs1_block_t block) noexcept
 {
-    auto * instance = reinterpret_cast<LittleFS1 *>(config->context);
+    auto * instance = static_cast<LittleFS1 *>(config->context);
 
     try
     {
@@ -141,7 +141,7 @@ int LittleFS1::_erase(lfs1_config const * config, lfs1_block_t block) noexcept
 
 int LittleFS1::_sync(lfs1_config const * config) noexcept
 {
-    auto * instance = reinterpret_cast<LittleFS1 *>(config->context);
+    auto * instance = static_cast<LittleFS1 *>(config->context);
 
     try
     {
