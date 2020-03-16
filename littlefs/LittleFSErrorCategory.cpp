@@ -11,7 +11,7 @@ char const * LittleFSErrorCategory::name() const noexcept
     return "littlefs";
 }
 
-std::string LittleFSErrorCategory::message(int condition) const noexcept
+std::string LittleFSErrorCategory::message(int condition) const
 {
     switch (condition)
     {
