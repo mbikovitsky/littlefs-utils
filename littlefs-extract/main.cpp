@@ -19,6 +19,8 @@
     #include "Unicode.hpp"
 #endif
 
+#include <littlefs_extract_config.h>
+
 #include <LittleFS1.hpp>
 
 
@@ -42,10 +44,10 @@ std::optional<CommandLineOptions> parse_command_line(std::vector<std::string> co
     desc.add_options()
         ("help,h", "produce help message")
         ("version,v", "show version")
-        ("littlefs-version,l", po::value<std::uint32_t>()->default_value(2), "littlefs version to use")
-        ("block-size,b", po::value<std::uint32_t>()->default_value(512), "filesystem block size")
-        ("read-size,r", po::value<std::uint32_t>()->default_value(64), "filesystem read size")
-        ("prog-size,p", po::value<std::uint32_t>()->default_value(64), "filesystem prog size")
+        ("littlefs-version,l", po::value<std::uint32_t>()->default_value(LITTLEFS_EXTRACT_DEFAULT_VERSION), "littlefs version to use")
+        ("block-size,b", po::value<std::uint32_t>()->default_value(LITTLEFS_EXTRACT_DEFAULT_BLOCK_SIZE), "filesystem block size")
+        ("read-size,r", po::value<std::uint32_t>()->default_value(LITTLEFS_EXTRACT_DEFAULT_READ_SIZE), "filesystem read size")
+        ("prog-size,p", po::value<std::uint32_t>()->default_value(LITTLEFS_EXTRACT_DEFAULT_PROG_SIZE), "filesystem prog size")
         ("input-file,i", po::value<std::string>()->required(), "littlefs image file")
         ("output-file,o", po::value<std::string>()->default_value("-"), "output tar file")
     ;
