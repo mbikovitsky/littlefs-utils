@@ -27,8 +27,8 @@
 
 namespace {
 
-gsl::owner<FILE *> duplicate_file_handle(gsl::not_null<std::FILE *> handle,
-                                         gsl::not_null<gsl::czstring<>> mode)
+gsl::owner<std::FILE *> duplicate_file_handle(gsl::not_null<std::FILE *> handle,
+                                              gsl::not_null<gsl::czstring<>> mode)
 {
     auto const original_fd = fileno(handle);
 
@@ -56,9 +56,9 @@ gsl::owner<FILE *> duplicate_file_handle(gsl::not_null<std::FILE *> handle,
     return new_handle;
 }
 
-gsl::owner<FILE *> open_file(std::string const & path, std::string const & mode)
+gsl::owner<std::FILE *> open_file(std::string const & path, std::string const & mode)
 {
-    std::FILE * handle = nullptr;
+    gsl::owner<std::FILE *> handle = nullptr;
 
 #if defined(_MSC_VER)
     // The mode is not technically UTF-8, just plain ASCII :)

@@ -38,9 +38,9 @@ public:
 
     [[nodiscard]] std::FILE * handle() const noexcept;
 
-    static CFile standard_input();
-    static CFile standard_output();
-    static CFile standard_error();
+    [[nodiscard]] static CFile standard_input();
+    [[nodiscard]] static CFile standard_output();
+    [[nodiscard]] static CFile standard_error();
 
 private:
     [[nodiscard]] gsl::owner<std::FILE *> _release() noexcept;

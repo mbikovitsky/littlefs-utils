@@ -5,6 +5,7 @@
 #include <utility>
 
 #include <archive.h>
+#include <archive_entry.h>
 
 
 namespace {
@@ -37,4 +38,41 @@ OutputArchive::OutputArchive(CFile file, int format) :
     {
         throw std::runtime_error(archive_error_string(_archive.get()));
     }
+}
+void OutputArchive::add_file(std::string const & path,
+                             gsl::span<std::byte const> buffer,
+                             unsigned short permissions)
+{
+    auto * const entry = archive_entry_new();
+    if (nullptr == entry)
+    {
+        throw std::runtime_error("archive_entry_new");
+    }
+
+    try
+    {
+        archive_entry_set_pathname(entry, path.c_str());
+        archive_entry_set_size(entry, buffer.size());
+        archive_entry_set_filetype(entry, AE_IFREG);
+        archive_entry_set_perm(entry, permissions);
+
+        auto const header_result = archive_write_header(_archive.get(), entry);
+        if (header_result < 0)
+        {
+            throw std::runtime_error(archive_error_string(_archive.get()));
+        }
+
+        auto const write_result = archive_write_data(_archive.get(),
+                                                     buffer.data(),
+                                                     static_cast<std::size_t>(buffer.size()));
+        if (write_result < 0)
+        {
+            throw std::runtime_error(archive_error_string(_archive.get()));
+        }
+    }
+    catch (...)
+    {
+        archive_entry_free(entry);
+    }
+    archive_entry_free(entry);
 }

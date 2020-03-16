@@ -1,8 +1,10 @@
 #pragma once
 
+#include <cstddef>
 #include <memory>
 
 #include <archive.h>
+#include <gsl/gsl>
 
 #include "CFile.hpp"
 
@@ -20,4 +22,8 @@ public:
 
     OutputArchive(OutputArchive const &) = delete;
     OutputArchive & operator=(OutputArchive const &) = delete;
+
+    void add_file(std::string const & path,
+                  gsl::span<std::byte const> buffer,
+                  unsigned short permissions);
 };
