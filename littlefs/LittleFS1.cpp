@@ -2,7 +2,7 @@
 
 #include <system_error>
 
-#include <gsl/span>
+#include <gsl/gsl>
 
 #include "LittleFSErrorCategory.hpp"
 
@@ -30,7 +30,7 @@ LittleFS1::LittleFS1(std::unique_ptr<IBlockDevice> block_device,
     auto const result = lfs1_mount(&_filesystem, &_config);
     if (result < 0)
     {
-        throw std::system_error(result, littlefs_category(), "mount");
+        throw std::system_error(result, littlefs_category(), "lfs1_mount");
     }
     _mounted = true;
 }
@@ -52,7 +52,7 @@ std::vector<LittleFS::DirectoryEntry> LittleFS1::list_directory(std::string cons
     auto result = lfs1_dir_open(&_filesystem, &directory, path.c_str());
     if (result < 0)
     {
-        throw std::system_error(result, littlefs_category(), "dir_open");
+        throw std::system_error(result, littlefs_category(), "lfs1_dir_open");
     }
     try
     {
@@ -62,7 +62,7 @@ std::vector<LittleFS::DirectoryEntry> LittleFS1::list_directory(std::string cons
             result = lfs1_dir_read(&_filesystem, &directory, &info);
             if (result < 0)
             {
-                throw std::system_error(result, littlefs_category(), "dir_read");
+                throw std::system_error(result, littlefs_category(), "lfs1_dir_read");
             }
             if (0 == result)
             {

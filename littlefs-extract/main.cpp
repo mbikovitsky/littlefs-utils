@@ -10,7 +10,7 @@
 #include <vector>
 
 #include <boost/program_options.hpp>
-#include <gsl/span>
+#include <gsl/gsl>
 
 #include "FileBlockDevice.hpp"
 #include "Util.hpp"
