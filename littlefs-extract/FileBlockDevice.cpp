@@ -54,7 +54,7 @@ void FileBlockDevice::read(std::uint32_t block,
         throw std::range_error("Invalid block number");
     }
 
-    if (offset + size >= _block_size)
+    if (offset + size > _block_size)
     {
         throw std::range_error("Invalid read range");
     }
@@ -77,7 +77,7 @@ void FileBlockDevice::program(std::uint32_t block,
         throw std::range_error("Invalid block number");
     }
 
-    if (offset + size >= _block_size)
+    if (offset + size > _block_size)
     {
         throw std::range_error("Invalid write range");
     }
