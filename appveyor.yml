@@ -1,0 +1,19 @@
+version: 1.0.{build}
+
+image:
+  - Visual Studio 2019
+
+clone_folder: C:\Projects\littlefs-utils
+
+environment:
+  matrix:
+    - ARCH: x64
+    - ARCH: x86
+
+build_script:
+  - cmd: |
+      mkdir build
+      cd build
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" %ARCH%
+      cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSTATIC_CRT=ON C:\Projects\littlefs-utils
+      cmake --build .
