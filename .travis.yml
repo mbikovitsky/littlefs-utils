@@ -5,7 +5,7 @@ before_script:
 
 script:
   - cmake -DCMAKE_BUILD_TYPE=Release .
-  - cmake --build . -- -j2
+  - cmake --build .
 
 jobs:
   include:
@@ -39,24 +39,3 @@ jobs:
         - pip install --user conan cmake
       env:
         - BEFORE_SCRIPT="CC=clang-9 && CXX=clang++-9"
-
-    - os: osx
-      osx_image: xcode11.3
-      addons:
-        homebrew:
-          update: true
-          packages:
-            - gcc@9
-            - conan
-            - cmake
-      env:
-        - BEFORE_SCRIPT="CC=gcc-9 && CXX=g++-9"
-
-    - os: osx
-      osx_image: xcode11.3
-      addons:
-        homebrew:
-          update: true
-          packages:
-            - conan
-            - cmake
