@@ -30,7 +30,7 @@ public:
     LittleFS1 & operator=(LittleFS1 const &) = delete;
 
     std::vector<LittleFS::DirectoryEntry> list_directory(std::string const & path) override;
-    std::vector<std::byte> read_file(std::string const & path) override;
+    std::unique_ptr<LittleFile> open_file(std::string const & path, OpenFlags flags) override;
 
 private:
     static int _read(lfs1_config const * config,

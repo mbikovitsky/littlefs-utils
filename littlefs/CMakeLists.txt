@@ -1,8 +1,9 @@
 add_library(littlefs
     IBlockDevice.hpp
     LittleFS.cpp LittleFS.hpp
+    LittleFile.cpp LittleFile.hpp
     LittleFSErrorCategory.cpp LittleFSErrorCategory.hpp
-    LittleFS1.cpp LittleFS1.hpp)
+    LittleFS1.cpp LittleFS1.hpp LittleFile1.cpp LittleFile1.hpp)
 
 target_include_directories(littlefs
     INTERFACE .)

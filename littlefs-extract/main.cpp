@@ -117,7 +117,8 @@ int entry_point(std::vector<std::string> const & argv)
 
     for (auto const & file_info : filesystem.recursive_dirlist("/"))
     {
-        auto const file_data = filesystem.read_file(file_info.path);
+        auto const file_data =
+            filesystem.open_file(file_info.path, LittleFS::OpenFlags::Read)->read_to_end();
         archive.add_file(file_info.path.substr(1), file_data, 0644);
     }
 
