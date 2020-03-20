@@ -5,6 +5,7 @@ fmt/6.1.2
 ms-gsl/2.0.0
 
 [options]
+boost:debug_level=1
 
 [generators]
 cmake

@@ -1,8 +1,5 @@
 language: cpp
 
-install:
-  - pip install --user conan cmake
-
 before_script:
   - eval "${BEFORE_SCRIPT}"
 
@@ -20,6 +17,9 @@ jobs:
             - ubuntu-toolchain-r-test
           packages:
             - gcc-9
+            - g++-9
+      install:
+        - pip install --user conan cmake
       env:
         - BEFORE_SCRIPT="CC=gcc-9 && CXX=g++-9"
 
@@ -33,6 +33,8 @@ jobs:
               key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
           packages:
             - clang-9
+      install:
+        - pip install --user conan cmake
       env:
         - BEFORE_SCRIPT="CC=clang-9 && CXX=clang++-9"
 
@@ -43,8 +45,16 @@ jobs:
           update: true
           packages:
             - gcc@9
+            - conan
+            - cmake
       env:
         - BEFORE_SCRIPT="CC=gcc-9 && CXX=g++-9"
 
     - os: osx
       osx_image: xcode11.3
+      addons:
+        homebrew:
+          update: true
+          packages:
+            - conan
+            - cmake
