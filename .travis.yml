@@ -1,0 +1,50 @@
+language: cpp
+
+install:
+  - pip install --user conan cmake
+
+before_script:
+  - eval "${BEFORE_SCRIPT}"
+
+script:
+  - cmake -DENABLE_CLANG_TIDY=ON .
+  - cmake --build . -- -j2
+
+jobs:
+  include:
+    - os: linux
+      dist: bionic
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - gcc-9
+      env:
+        - BEFORE_SCRIPT="CC=gcc-9 && CXX=g++-9"
+
+    - os: linux
+      dist: bionic
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
+              key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
+          packages:
+            - clang-9
+      env:
+        - BEFORE_SCRIPT="CC=clang-9 && CXX=clang++-9"
+
+    - os: osx
+      osx_image: xcode11.3
+      addons:
+        homebrew:
+          update: true
+          packages:
+            - gcc@9
+      env:
+        - BEFORE_SCRIPT="CC=gcc-9 && CXX=g++-9"
+
+    - os: osx
+      osx_image: xcode11.3
