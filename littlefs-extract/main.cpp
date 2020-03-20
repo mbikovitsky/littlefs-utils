@@ -40,6 +40,9 @@ struct CommandLineOptions
 namespace po = boost::program_options;
 
 
+static constexpr int TAR_FILE_PERMISSIONS = 0644;
+
+
 std::optional<CommandLineOptions> parse_command_line(std::vector<std::string> const & argv)
 {
     po::options_description desc("Allowed options");
@@ -119,7 +122,7 @@ int entry_point(std::vector<std::string> const & argv)
     {
         auto const file_data =
             filesystem.open_file(file_info.path, LittleFS::OpenFlags::Read)->read_to_end();
-        archive.add_file(file_info.path.substr(1), file_data, 0644);
+        archive.add_file(file_info.path.substr(1), file_data, TAR_FILE_PERMISSIONS);
     }
 
     return 0;
