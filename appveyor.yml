@@ -10,6 +10,9 @@ environment:
     - ARCH: x64
     - ARCH: x86
 
+install:
+  - cmd: pip install --user conan
+
 build_script:
   - cmd: |
       mkdir build
