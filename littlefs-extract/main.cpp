@@ -25,6 +25,7 @@
 #include <littlefs_extract_config.h>
 
 #include <LittleFS1.hpp>
+#include <LittleFS2.hpp>
 
 
 struct CommandLineOptions
@@ -112,17 +113,30 @@ int entry_point(std::vector<std::string> const & argv)
                                                         options->block_size,
                                                         static_cast<std::uint32_t>(block_count));
 
-    LittleFS1 filesystem(std::move(image_file), options->read_size, options->prog_size);
+    std::unique_ptr<LittleFS> filesystem {};
+    switch (options->version)
+    {
+    case 1:
+        filesystem = std::make_unique<LittleFS1>(std::move(image_file), options->read_size, options->prog_size);
+        break;
+
+    case 2:
+        filesystem = std::make_unique<LittleFS2>(std::move(image_file), options->read_size, options->prog_size);
+        break;
+
+    default:
+        throw std::runtime_error("Invalid littlefs version specified");
+    }
 
     CFile output_file = options->output_file_path == "-" ? CFile::standard_output()
                                                          : CFile(options->output_file_path, "w");
 
     OutputArchive archive(std::move(output_file), ARCHIVE_FORMAT_TAR_PAX_RESTRICTED);
 
-    for (auto const & file_info : filesystem.recursive_dirlist("/"))
+    for (auto const & file_info : filesystem->recursive_dirlist("/"))
     {
         auto const stream = std::make_unique<LittleFileInputStream>(
-            filesystem.open_file(file_info.path, LittleFS::OpenFlags::Read));
+            filesystem->open_file(file_info.path, LittleFS::OpenFlags::Read));
         archive.add_file(file_info.path.substr(1), *stream, TAR_FILE_PERMISSIONS);
     }
 
