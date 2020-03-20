@@ -11,7 +11,7 @@ environment:
     - ARCH: x86
 
 install:
-  - cmd: pip install --user conan
+  - cmd: pip install conan
 
 build_script:
   - cmd: |
