@@ -39,8 +39,3 @@ target_link_libraries(littlefs-extract
     PRIVATE project_options project_warnings
             CONAN_PKG::libarchive CONAN_PKG::boost CONAN_PKG::ms-gsl
             littlefs)
-
-if (MSVC)
-    target_compile_definitions(littlefs-extract
-        PRIVATE -DUNICODE -D_UNICODE)
-endif (MSVC)
