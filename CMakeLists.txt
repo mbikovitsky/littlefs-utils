@@ -27,6 +27,9 @@ endif ()
 # Link this 'library' to set the c++ standard / compile-time options requested
 add_library(project_options INTERFACE)
 target_compile_features(project_options INTERFACE cxx_std_17 c_std_99)
+if(MSVC)
+    target_compile_definitions(project_options INTERFACE -DNOMINMAX)
+endif()
 
 # Link this 'library' to use the warnings specified in CompilerWarnings.cmake
 add_library(project_warnings INTERFACE)
