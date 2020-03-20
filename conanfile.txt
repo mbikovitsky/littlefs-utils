@@ -7,9 +7,6 @@ ms-gsl/2.0.0
 [options]
 boost:debug_level=1
 
-[generators]
-cmake
-
 [imports]
 bin, *.dll -> ./bin # Copies all dll files from packages bin folder to my "bin" folder
 lib, *.dll -> ./bin # Copies all dll files from packages lib folder to my "bin" folder
