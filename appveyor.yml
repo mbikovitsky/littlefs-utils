@@ -11,6 +11,7 @@ environment:
     - ARCH: x86
 
 install:
+  - cmd: git submodule update --init --recursive
   - cmd: pip install conan
 
 build_script:
@@ -18,5 +19,5 @@ build_script:
       mkdir build
       cd build
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" %ARCH%
-      cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSTATIC_CRT=ON C:\Projects\littlefs-utils
+      cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSTATIC_CRT=ON ..
       cmake --build .
