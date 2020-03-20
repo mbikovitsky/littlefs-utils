@@ -4,7 +4,7 @@ before_script:
   - eval "${BEFORE_SCRIPT}"
 
 script:
-  - cmake -DENABLE_CLANG_TIDY=ON .
+  - cmake .
   - cmake --build . -- -j2
 
 jobs:
