@@ -27,5 +27,7 @@ public:
     LittleFile1 & operator=(LittleFile1 const &) = delete;
 
     std::size_t read(gsl::span<std::byte> buffer) override;
+
     [[nodiscard]] std::size_t size() const override;
+    [[nodiscard]] std::size_t position() const override;
 };

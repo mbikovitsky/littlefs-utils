@@ -1,5 +1,6 @@
 #include "OutputArchive.hpp"
 
+#include <limits>
 #include <memory>
 #include <stdexcept>
 #include <utility>
@@ -10,6 +11,8 @@
 
 namespace {
 
+constexpr std::size_t STREAM_READ_BUFFER_SIZE = 4 * 1024;
+
 std::unique_ptr<archive, decltype(&archive_write_free)> create_archive_object()
 {
     auto const object = archive_write_new();
@@ -18,6 +21,16 @@ std::unique_ptr<archive, decltype(&archive_write_free)> create_archive_object()
         throw std::runtime_error("archive_write_new");
     }
     return {object, &archive_write_free};
+}
+
+std::unique_ptr<archive_entry, decltype(&archive_entry_free)> create_archive_entry()
+{
+    auto const entry = archive_entry_new();
+    if (nullptr == entry)
+    {
+        throw std::runtime_error("archive_entry_new");
+    }
+    return {entry, &archive_entry_free};
 }
 
 }  // namespace
@@ -40,39 +53,40 @@ OutputArchive::OutputArchive(CFile file, int format) :
     }
 }
 void OutputArchive::add_file(std::string const & path,
-                             gsl::span<std::byte const> buffer,
+                             IInputStream & stream,
                              unsigned short permissions)
 {
-    auto * const entry = archive_entry_new();
-    if (nullptr == entry)
+    auto const stream_size = stream.remaining();
+
+    if (stream_size > std::numeric_limits<la_int64_t>::max())
     {
-        throw std::runtime_error("archive_entry_new");
+        throw std::length_error("Stream too large");
     }
 
-    try
+    auto const entry = create_archive_entry();
+
+    archive_entry_set_pathname(entry.get(), path.c_str());
+    archive_entry_set_size(entry.get(), static_cast<la_int64_t>(stream_size));
+    archive_entry_set_filetype(entry.get(), AE_IFREG);
+    archive_entry_set_perm(entry.get(), permissions);
+
+    std::vector<std::byte> buffer(STREAM_READ_BUFFER_SIZE);
+
+    auto const header_result = archive_write_header(_archive.get(), entry.get());
+    if (header_result < 0)
     {
-        archive_entry_set_pathname(entry, path.c_str());
-        archive_entry_set_size(entry, buffer.size());
-        archive_entry_set_filetype(entry, AE_IFREG);
-        archive_entry_set_perm(entry, permissions);
+        throw std::runtime_error(archive_error_string(_archive.get()));
+    }
 
-        auto const header_result = archive_write_header(_archive.get(), entry);
-        if (header_result < 0)
-        {
-            throw std::runtime_error(archive_error_string(_archive.get()));
-        }
-
-        auto const write_result = archive_write_data(_archive.get(),
-                                                     buffer.data(),
-                                                     static_cast<std::size_t>(buffer.size()));
+    auto to_read = stream_size;
+    while (to_read > 0)
+    {
+        auto const bytes_read = stream.read(buffer);
+        auto const write_result = archive_write_data(_archive.get(), buffer.data(), bytes_read);
         if (write_result < 0)
         {
             throw std::runtime_error(archive_error_string(_archive.get()));
         }
+        to_read -= bytes_read;
     }
-    catch (...)
-    {
-        archive_entry_free(entry);
-    }
-    archive_entry_free(entry);
 }

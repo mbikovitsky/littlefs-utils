@@ -19,7 +19,7 @@ public:
                     bool writable,
                     std::uint32_t block_size,
                     std::uint32_t block_count);
-    virtual ~FileBlockDevice() = default;
+    ~FileBlockDevice() override = default;
 
     FileBlockDevice(FileBlockDevice const &) = delete;
     FileBlockDevice & operator=(FileBlockDevice const &) = delete;

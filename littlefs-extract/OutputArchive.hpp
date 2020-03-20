@@ -7,6 +7,7 @@
 #include <gsl/gsl>
 
 #include "CFile.hpp"
+#include "IInputStream.hpp"
 
 
 class OutputArchive
@@ -23,7 +24,5 @@ public:
     OutputArchive(OutputArchive const &) = delete;
     OutputArchive & operator=(OutputArchive const &) = delete;
 
-    void add_file(std::string const & path,
-                  gsl::span<std::byte const> buffer,
-                  unsigned short permissions);
+    void add_file(std::string const & path, IInputStream & stream, unsigned short permissions);
 };

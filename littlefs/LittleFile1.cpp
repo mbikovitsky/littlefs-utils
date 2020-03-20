@@ -56,3 +56,14 @@ std::size_t LittleFile1::size() const
 
     return static_cast<std::size_t>(file_size);
 }
+
+std::size_t LittleFile1::position() const
+{
+    auto const file_position = lfs1_file_tell(_filesystem, &_file);
+    if (file_position < 0)
+    {
+        throw std::system_error(file_position, littlefs_category(), "lfs1_file_tell");
+    }
+
+    return static_cast<std::size_t>(file_position);
+}

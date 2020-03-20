@@ -14,6 +14,7 @@
 
 #include "CFile.hpp"
 #include "FileBlockDevice.hpp"
+#include "LittleFileInputStream.hpp"
 #include "OutputArchive.hpp"
 #include "Util.hpp"
 
@@ -120,9 +121,9 @@ int entry_point(std::vector<std::string> const & argv)
 
     for (auto const & file_info : filesystem.recursive_dirlist("/"))
     {
-        auto const file_data =
-            filesystem.open_file(file_info.path, LittleFS::OpenFlags::Read)->read_to_end();
-        archive.add_file(file_info.path.substr(1), file_data, TAR_FILE_PERMISSIONS);
+        auto const stream = std::make_unique<LittleFileInputStream>(
+            filesystem.open_file(file_info.path, LittleFS::OpenFlags::Read));
+        archive.add_file(file_info.path.substr(1), *stream, TAR_FILE_PERMISSIONS);
     }
 
     return 0;
