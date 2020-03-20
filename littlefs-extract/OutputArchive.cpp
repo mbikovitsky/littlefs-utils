@@ -1,5 +1,6 @@
 #include "OutputArchive.hpp"
 
+#include <cstdint>
 #include <limits>
 #include <memory>
 #include <stdexcept>
@@ -58,7 +59,8 @@ void OutputArchive::add_file(std::string const & path,
 {
     auto const stream_size = stream.remaining();
 
-    if (stream_size > std::numeric_limits<la_int64_t>::max())
+    if (static_cast<std::uintmax_t>(stream_size)
+        > static_cast<std::uintmax_t>(std::numeric_limits<la_int64_t>::max()))
     {
         throw std::length_error("Stream too large");
     }
