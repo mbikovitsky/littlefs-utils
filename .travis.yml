@@ -4,7 +4,7 @@ before_script:
   - eval "${BEFORE_SCRIPT}"
 
 script:
-  - cmake .
+  - cmake -DCMAKE_BUILD_TYPE=Release .
   - cmake --build . -- -j2
 
 jobs:
