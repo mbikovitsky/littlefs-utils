@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <system_error>
+#include <utility>
 
 #include <gsl/gsl>
 
@@ -10,9 +11,9 @@
 
 
 LittleFS1::LittleFS1(std::unique_ptr<IBlockDevice> block_device,
-                     lfs1_size_t read_size,
-                     lfs1_size_t program_size,
-                     lfs1_size_t lookahead) :
+                     lfs1_size_t const read_size,
+                     lfs1_size_t const program_size,
+                     lfs1_size_t const lookahead) :
     _block_device(std::move(block_device)),
     _config(),
     _filesystem(),

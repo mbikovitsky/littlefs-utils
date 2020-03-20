@@ -3,7 +3,8 @@ add_library(littlefs
     LittleFS.cpp LittleFS.hpp
     LittleFile.hpp
     LittleFSErrorCategory.cpp LittleFSErrorCategory.hpp
-    LittleFS1.cpp LittleFS1.hpp LittleFile1.cpp LittleFile1.hpp)
+    LittleFS1.cpp LittleFS1.hpp LittleFile1.cpp LittleFile1.hpp
+    LittleFS2.cpp LittleFS2.hpp LittleFile2.cpp LittleFile2.hpp)
 
 target_include_directories(littlefs
     INTERFACE .)
