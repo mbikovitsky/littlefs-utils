@@ -33,6 +33,7 @@ struct CommandLineOptions
 {
     std::uint32_t version;
     std::uint32_t block_size;
+    std::optional<std::uint32_t> block_count;
     std::uint32_t read_size;
     std::uint32_t prog_size;
     std::string input_file_path;
@@ -55,6 +56,7 @@ std::optional<CommandLineOptions> parse_command_line(std::string const & executa
         ("version,v", "show version")
         ("littlefs-version,l", po::value<std::uint32_t>()->default_value(LITTLEFS_EXTRACT_DEFAULT_VERSION), "littlefs version to use")
         ("block-size,b", po::value<std::uint32_t>()->default_value(LITTLEFS_EXTRACT_DEFAULT_BLOCK_SIZE), "filesystem block size")
+        ("block-count,c", po::value<std::uint32_t>(), "filesystem block count")
         ("read-size,r", po::value<std::uint32_t>()->default_value(LITTLEFS_EXTRACT_DEFAULT_READ_SIZE), "filesystem read size")
         ("prog-size,p", po::value<std::uint32_t>()->default_value(LITTLEFS_EXTRACT_DEFAULT_PROG_SIZE), "filesystem prog size")
         ("input-file,i", po::value<std::string>()->required(), "littlefs image file")
@@ -68,7 +70,7 @@ std::optional<CommandLineOptions> parse_command_line(std::string const & executa
     {
         auto const & usage =
             fmt::format("Usage: {} -i INPUT_FILE [-l LITTLEFS_VERSION] [-b BLOCK_SIZE] "
-                        "[-r READ_SIZE] [-p PROG_SIZE] [-o OUTPUT_FILE]\n",
+                        "[-c BLOCK_COUNT] [-r READ_SIZE] [-p PROG_SIZE] [-o OUTPUT_FILE]\n",
                         executable);
 
 #if _MSC_VER
@@ -97,34 +99,44 @@ std::optional<CommandLineOptions> parse_command_line(std::string const & executa
     options.input_file_path = vm["input-file"].as<std::string>();
     options.output_file_path = vm["output-file"].as<std::string>();
 
+    if (0 != vm.count("block-count"))
+    {
+        options.block_count = vm["block-count"].as<std::uint32_t>();
+    }
+
     return options;
 }
 
 int entry_point(std::string const & executable, std::vector<std::string> const & args)
 {
-    auto const options = parse_command_line(executable, args);
+    auto options = parse_command_line(executable, args);
     if (!options)
     {
         return 1;
     }
 
-    auto const image_size = file_size(options->input_file_path);
-    if (image_size % options->block_size != 0)
+    if (!options->block_count)
     {
-        throw std::runtime_error("Invalid block size");
-    }
+        auto const image_size = file_size(options->input_file_path);
+        if (image_size % options->block_size != 0)
+        {
+            throw std::runtime_error("Invalid block size");
+        }
 
-    auto const block_count = image_size / options->block_size;
+        auto const block_count = image_size / options->block_size;
 
-    if (block_count > std::numeric_limits<std::uint32_t>::max())
-    {
-        throw std::runtime_error("Image too large");
+        if (block_count > std::numeric_limits<std::uint32_t>::max())
+        {
+            throw std::runtime_error("Image too large");
+        }
+
+        options->block_count = static_cast<std::uint32_t>(block_count);
     }
 
     auto image_file = std::make_unique<FileBlockDevice>(options->input_file_path,
                                                         false,
                                                         options->block_size,
-                                                        static_cast<std::uint32_t>(block_count));
+                                                        options->block_count.value());
 
     std::unique_ptr<LittleFS> filesystem {};
     switch (options->version)
