@@ -8,7 +8,13 @@ clone_folder: C:\Projects\littlefs-utils
 environment:
   matrix:
     - ARCH: x64
+      STATIC_CRT: ON
+    - ARCH: x64
+      STATIC_CRT: OFF
     - ARCH: x86
+      STATIC_CRT: ON
+    - ARCH: x86
+      STATIC_CRT: OFF
 
 install:
   - cmd: git submodule update --init --recursive
@@ -19,5 +25,5 @@ build_script:
       mkdir build
       cd build
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" %ARCH%
-      cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSTATIC_CRT=ON ..
+      cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSTATIC_CRT=%STATIC_CRT% ..
       cmake --build .
