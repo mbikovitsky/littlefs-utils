@@ -10,6 +10,7 @@
 #include <vector>
 
 #include <boost/program_options.hpp>
+#include <fmt/core.h>
 #include <gsl/gsl>
 
 #include "CFile.hpp"
@@ -45,7 +46,8 @@ namespace po = boost::program_options;
 static constexpr int TAR_FILE_PERMISSIONS = 0644;
 
 
-std::optional<CommandLineOptions> parse_command_line(std::vector<std::string> const & argv)
+std::optional<CommandLineOptions> parse_command_line(std::string const & executable,
+                                                     std::vector<std::string> const & args)
 {
     po::options_description desc("Allowed options");
     desc.add_options()
@@ -60,10 +62,21 @@ std::optional<CommandLineOptions> parse_command_line(std::vector<std::string> co
     ;
 
     po::variables_map vm {};
-    po::store(po::basic_command_line_parser(argv).options(desc).run(), vm);
+    po::store(po::basic_command_line_parser(args).options(desc).run(), vm);
 
-    if (0 != vm.count("help"))
+    if (args.empty() || 0 != vm.count("help"))
     {
+        auto const & usage =
+            fmt::format("Usage: {} -i INPUT_FILE [-l LITTLEFS_VERSION] [-b BLOCK_SIZE] "
+                        "[-r READ_SIZE] [-p PROG_SIZE] [-o OUTPUT_FILE]\n",
+                        executable);
+
+#if _MSC_VER
+        std::wcout << utf8_to_wide_char(usage);
+#else
+        std::cout << usage;
+#endif
+
         std::cout << desc << "\n";
         return {};
     }
@@ -87,9 +100,9 @@ std::optional<CommandLineOptions> parse_command_line(std::vector<std::string> co
     return options;
 }
 
-int entry_point(std::vector<std::string> const & argv)
+int entry_point(std::string const & executable, std::vector<std::string> const & args)
 {
-    auto const options = parse_command_line(argv);
+    auto const options = parse_command_line(executable, args);
     if (!options)
     {
         return 1;
@@ -117,11 +130,15 @@ int entry_point(std::vector<std::string> const & argv)
     switch (options->version)
     {
     case 1:
-        filesystem = std::make_unique<LittleFS1>(std::move(image_file), options->read_size, options->prog_size);
+        filesystem = std::make_unique<LittleFS1>(std::move(image_file),
+                                                 options->read_size,
+                                                 options->prog_size);
         break;
 
     case 2:
-        filesystem = std::make_unique<LittleFS2>(std::move(image_file), options->read_size, options->prog_size);
+        filesystem = std::make_unique<LittleFS2>(std::move(image_file),
+                                                 options->read_size,
+                                                 options->prog_size);
         break;
 
     default:
@@ -159,12 +176,16 @@ int main(int argc, char ** argv) noexcept
         {
             arguments.push_back(wide_char_to_utf8(argv[index]));
         }
+
+        std::string const executable(wide_char_to_utf8(argv[0]));
 #else
         auto const arguments_span = gsl::span<char *>(argv, argc).subspan(1);
-        std::vector<std::string> arguments(arguments_span.cbegin(), arguments_span.cend());
+        std::vector<std::string> const arguments(arguments_span.cbegin(), arguments_span.cend());
+
+        std::string const executable(argv[0]);
 #endif
 
-        return entry_point(arguments);
+        return entry_point(executable, arguments);
     }
     catch (std::exception const & exception)
     {
