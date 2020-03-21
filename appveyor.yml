@@ -11,10 +11,6 @@ environment:
       STATIC_CRT: ON
     - ARCH: x64
       STATIC_CRT: OFF
-    - ARCH: x86
-      STATIC_CRT: ON
-    - ARCH: x86
-      STATIC_CRT: OFF
 
 install:
   - cmd: git submodule update --init --recursive
