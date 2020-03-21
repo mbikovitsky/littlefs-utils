@@ -4,6 +4,7 @@ before_script:
   - eval "${BEFORE_SCRIPT}"
 
 script:
+  - export LITTLEFS_UTILS_VERSION=v0.1.3-travis$TRAVIS_BUILD_ID
   - cmake -DCMAKE_BUILD_TYPE=Release .
   - cmake --build .
 
