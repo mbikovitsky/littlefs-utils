@@ -40,6 +40,7 @@ std::uintmax_t file_size(std::string const & path)
         throw std::system_error(errno, std::system_category(), "_wsopen_s");
     }
 #else
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg, hicpp-vararg): Gotta do it
     auto const fd = open(path.c_str(), O_RDONLY);
     if (-1 == fd)
     {
