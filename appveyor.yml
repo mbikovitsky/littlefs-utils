@@ -24,6 +24,11 @@ build_script:
       cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSTATIC_CRT=%STATIC_CRT% ..
       cmake --build .
 
+after_build:
+  - cmd: |
+      if "%STATIC_CRT%"=="ON" (set SUFFIX=%ARCH%-static) else (set SUFFIX=%ARCH%)
+      move /y build\bin\littlefs-extract.exe build\bin\littlefs-extract-%SUFFIX%.exe
+
 artifacts:
   - path: build\bin\*.exe
     name: Windows executables
