@@ -84,7 +84,7 @@ std::optional<CommandLineOptions> parse_command_line(std::string const & executa
     }
     if (0 != vm.count("version"))
     {
-        std::cout << "littlefs-extract v0.1.2\n";
+        std::cout << "littlefs-extract v0.1.3\n";
         return {};
     }
 
