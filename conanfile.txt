@@ -1,0 +1,13 @@
+[requires]
+libarchive/3.4.0
+boost/1.72.0
+fmt/6.1.2
+ms-gsl/2.0.0
+
+[options]
+boost:debug_level=1
+
+[imports]
+bin, *.dll -> ./bin # Copies all dll files from packages bin folder to my "bin" folder
+lib, *.dll -> ./bin # Copies all dll files from packages lib folder to my "bin" folder
+lib, *.dylib* -> ./bin # Copies all dylib files from packages lib folder to my "bin" folder

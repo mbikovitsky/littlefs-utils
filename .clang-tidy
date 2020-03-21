@@ -1,0 +1,8 @@
+---
+Checks:          '*,-fuchsia-*,-google-*,-zircon-*,-abseil-*,-modernize-use-trailing-return-type,-llvm-*,-android-*'
+WarningsAsErrors: '1'
+HeaderFilterRegex: ''
+FormatStyle:     none
+CheckOptions:
+  - key: hicpp-signed-bitwise.IgnorePositiveIntegerLiterals
+    value: true
