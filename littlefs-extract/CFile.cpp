@@ -3,6 +3,7 @@
 #include <cerrno>
 #include <cstdio>
 #include <system_error>
+#include <utility>
 
 #if defined(_MSC_VER)
     #include <io.h>
@@ -27,8 +28,7 @@
 
 namespace {
 
-gsl::owner<std::FILE *> duplicate_file_handle(gsl::not_null<std::FILE *> handle,
-                                              gsl::not_null<gsl::czstring<>> mode)
+auto duplicate_file_handle(gsl::not_null<std::FILE *> handle, gsl::not_null<gsl::czstring<>> mode)
 {
     auto const original_fd = fileno(handle);
 
@@ -38,25 +38,17 @@ gsl::owner<std::FILE *> duplicate_file_handle(gsl::not_null<std::FILE *> handle,
         throw std::system_error(errno, std::system_category(), "dup");
     }
 
-    std::FILE * new_handle = nullptr;
-    try
-    {
-        new_handle = fdopen(new_fd, mode);
-        if (nullptr == new_handle)
-        {
-            throw std::system_error(errno, std::system_category(), "fdopen");
-        }
-    }
-    catch (...)
+    auto const new_handle = fdopen(new_fd, mode);
+    if (nullptr == new_handle)
     {
         close(new_fd);
-        throw;
+        throw std::system_error(errno, std::system_category(), "fdopen");
     }
 
-    return new_handle;
+    return std::unique_ptr<std::FILE, decltype(&std::fclose)>(new_handle, &std::fclose);
 }
 
-gsl::owner<std::FILE *> open_file(std::string const & path, std::string const & mode)
+auto open_file(std::string const & path, std::string const & mode)
 {
     gsl::owner<std::FILE *> handle = nullptr;
 
@@ -76,13 +68,13 @@ gsl::owner<std::FILE *> open_file(std::string const & path, std::string const & 
     }
 #endif
 
-    return handle;
+    return std::unique_ptr<std::FILE, decltype(&std::fclose)>(handle, &std::fclose);
 }
 
 }  // namespace
 
 
-CFile::CFile(gsl::not_null<std::FILE *> handle) : _handle(handle)
+CFile::CFile(std::unique_ptr<std::FILE, decltype(&std::fclose)> handle) : _handle(std::move(handle))
 {
 }
 
@@ -90,55 +82,22 @@ CFile::CFile(std::string const & path, std::string const & mode) : _handle(open_
 {
 }
 
-CFile::~CFile()
-{
-    _destroy();
-}
-
-CFile::CFile(CFile && other) noexcept : _handle(other._release())
-{
-}
-
-CFile & CFile::operator=(CFile && other) noexcept
-{
-    _destroy();
-    _handle = other._release();
-
-    return *this;
-}
-
 std::FILE * CFile::handle() const noexcept
 {
-    return _handle;
+    return _handle.get();
 }
 
 CFile CFile::standard_input()
 {
-    return CFile(gsl::not_null(duplicate_file_handle(gsl::not_null(stdin), gsl::not_null("r"))));
+    return CFile(duplicate_file_handle(gsl::not_null(stdin), gsl::not_null("r")));
 }
 
 CFile CFile::standard_output()
 {
-    return CFile(gsl::not_null(duplicate_file_handle(gsl::not_null(stdout), gsl::not_null("w"))));
+    return CFile(duplicate_file_handle(gsl::not_null(stdout), gsl::not_null("w")));
 }
 
 CFile CFile::standard_error()
 {
-    return CFile(gsl::not_null(duplicate_file_handle(gsl::not_null(stderr), gsl::not_null("w"))));
-}
-
-gsl::owner<std::FILE *> CFile::_release() noexcept
-{
-    gsl::owner<std::FILE *> const handle = _handle;
-    _handle = nullptr;
-    return handle;
-}
-
-void CFile::_destroy() noexcept
-{
-    if (nullptr != _handle)
-    {
-        std::fclose(_handle);
-        _handle = nullptr;
-    }
+    return CFile(duplicate_file_handle(gsl::not_null(stderr), gsl::not_null("w")));
 }
