@@ -30,6 +30,8 @@ artifacts:
 
 deploy:
   - provider: GitHub
+    auth_token:
+      secure: VGIdTmInN6q55lkHcbo6tUCrm/vgbomagZ+p3wAu94IE2+mgk9jPvGVLjjPrwle7
     artifact: Windows executables
     draft: false
     prerelease: false
