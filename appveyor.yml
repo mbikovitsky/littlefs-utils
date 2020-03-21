@@ -23,3 +23,16 @@ build_script:
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" %ARCH%
       cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSTATIC_CRT=%STATIC_CRT% ..
       cmake --build .
+
+artifacts:
+  - path: build\bin\*.exe
+    name: Windows executables
+
+deploy:
+  - provider: GitHub
+    artifact: Windows executables
+    draft: false
+    prerelease: false
+    on:
+      branch: master
+      APPVEYOR_REPO_TAG: true
