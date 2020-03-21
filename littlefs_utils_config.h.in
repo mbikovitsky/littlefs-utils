@@ -1,0 +1,3 @@
+#pragma once
+
+#cmakedefine LITTLEFS_UTILS_VERSION ("@LITTLEFS_UTILS_VERSION@")

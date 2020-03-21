@@ -24,6 +24,7 @@
 #endif
 
 #include <littlefs_extract_config.h>
+#include <littlefs_utils_config.h>
 
 #include <LittleFS1.hpp>
 #include <LittleFS2.hpp>
@@ -84,7 +85,7 @@ std::optional<CommandLineOptions> parse_command_line(std::string const & executa
     }
     if (0 != vm.count("version"))
     {
-        std::cout << "littlefs-extract v0.1.3\n";
+        std::cout << fmt::format("littlefs-extract {}\n", LITTLEFS_UTILS_VERSION);
         return {};
     }
 

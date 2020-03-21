@@ -1,4 +1,4 @@
-version: v0.1.3
+version: v0.1.3-build{build}
 
 image:
   - Visual Studio 2019
@@ -21,11 +21,9 @@ build_script:
       mkdir build
       cd build
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" %ARCH%
+      set LITTLEFS_UTILS_VERSION=%APPVEYOR_BUILD_VERSION%
       cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSTATIC_CRT=%STATIC_CRT% ..
       cmake --build .
-
-after_build:
-  - cmd: |
       if "%STATIC_CRT%"=="ON" (set SUFFIX=%ARCH%-static) else (set SUFFIX=%ARCH%)
       move /y build\bin\littlefs-extract.exe build\bin\littlefs-extract-%SUFFIX%.exe
 
