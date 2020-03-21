@@ -3,5 +3,6 @@ Checks:          '*,-fuchsia-*,-google-*,-zircon-*,-abseil-*,-modernize-use-trai
 WarningsAsErrors: '1'
 HeaderFilterRegex: ''
 FormatStyle:     none
-
-
+CheckOptions:
+  - key: hicpp-signed-bitwise.IgnorePositiveIntegerLiterals
+    value: true

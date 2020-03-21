@@ -131,6 +131,7 @@ int entry_point(std::vector<std::string> const & argv)
     CFile output_file = options->output_file_path == "-" ? CFile::standard_output()
                                                          : CFile(options->output_file_path, "w");
 
+    // NOLINTNEXTLINE(hicpp-signed-bitwise): There are unsigned literals
     OutputArchive archive(std::move(output_file), ARCHIVE_FORMAT_TAR_PAX_RESTRICTED);
 
     for (auto const & file_info : filesystem->recursive_dirlist("/"))
