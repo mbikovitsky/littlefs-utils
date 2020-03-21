@@ -1,7 +1,10 @@
 # littlefs-utils
 
-![Travis (.com)](https://img.shields.io/travis/com/mbikovitsky/littlefs-utils?label=Travis%20CI%20latest)
-![AppVeyor](https://img.shields.io/appveyor/build/mbikovitsky/littlefs-utils?label=AppVeyor%20latest)
+![Travis CI latest](https://img.shields.io/travis/com/mbikovitsky/littlefs-utils?label=Travis%20CI%20latest)
+![AppVeyor latest](https://img.shields.io/appveyor/build/mbikovitsky/littlefs-utils?label=AppVeyor%20latest)
+
+![Travis CI master](https://img.shields.io/travis/com/mbikovitsky/littlefs-utils/master?label=Travis%20CI%20master)
+![AppVeyor master](https://img.shields.io/appveyor/build/mbikovitsky/littlefs-utils/master?label=AppVeyor%20master)
 
 Various utilities for [littlefs](https://github.com/ARMmbed/littlefs).
 
