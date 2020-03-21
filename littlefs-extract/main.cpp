@@ -182,19 +182,25 @@ int main(int argc, char ** argv) noexcept
     try
     {
 #if defined(_MSC_VER)
+        gsl::span<wchar_t *> argv_span(argv, argc);
+
+        auto const arguments_span = argv_span.subspan(1);
+
         std::vector<std::string> arguments {};
-        arguments.reserve(argc - 1);
-        for (int index = 1; index < argc; ++index)
+        arguments.reserve(arguments_span.size());
+        for (auto const & argument : arguments_span)
         {
-            arguments.push_back(wide_char_to_utf8(argv[index]));
+            arguments.push_back(wide_char_to_utf8(argument));
         }
 
-        std::string const executable(wide_char_to_utf8(argv[0]));
+        std::string const executable(wide_char_to_utf8(argv_span.at(0)));
 #else
-        auto const arguments_span = gsl::span<char *>(argv, argc).subspan(1);
+        gsl::span<char *> argv_span(argv, argc);
+
+        auto const arguments_span = argv_span.subspan(1);
         std::vector<std::string> const arguments(arguments_span.cbegin(), arguments_span.cend());
 
-        std::string const executable(argv[0]);
+        std::string const executable(argv_span.at(0));
 #endif
 
         return entry_point(executable, arguments);
