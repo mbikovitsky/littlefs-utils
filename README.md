@@ -16,14 +16,23 @@ Extracts the contents of a littlefs image to a tar archive.
 ### Usage
 
 ```
-littlefs-extract -i INPUT_FILE [-l LITTLEFS_VERSION] [-b BLOCK_SIZE] [-r READ_SIZE] [-p PROG_SIZE] [-o OUTPUT_FILE]
+littlefs-extract -i INPUT_FILE [-l LITTLEFS_VERSION] [-b BLOCK_SIZE] [-c BLOCK_COUNT] [-r READ_SIZE] [-p PROG_SIZE] [-o OUTPUT_FILE]
 Allowed options:
   -h [ --help ]                      produce help message
   -v [ --version ]                   show version
   -l [ --littlefs-version ] arg (=2) littlefs version to use
   -b [ --block-size ] arg (=512)     filesystem block size
+  -c [ --block-count ] arg           filesystem block count
   -r [ --read-size ] arg (=64)       filesystem read size
   -p [ --prog-size ] arg (=64)       filesystem prog size
   -i [ --input-file ] arg            littlefs image file
   -o [ --output-file ] arg (=-)      output tar file
 ```
+
+If a block count is not specified, the application attemps to infer it from
+the input file's size. On *nix systems this works even for block devices.
+On Windows, when opening a physical disk the block count *must* be specified.
+
+Note: to access a physical disk on Windows, use a path of the form:
+`\\.\PhysicalDrive%d`. To get a list of physical disks, invoke, for instance:
+`wmic diskdrive list brief /format:list`.
