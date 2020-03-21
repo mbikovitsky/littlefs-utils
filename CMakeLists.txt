@@ -38,6 +38,10 @@ if(MSVC)
     target_compile_definitions(project_options INTERFACE -DUNICODE -D_UNICODE)
 endif()
 
+set(LITTLEFS_UTILS_VERSION $ENV{LITTLEFS_UTILS_VERSION})
+configure_file(littlefs_utils_config.h.in littlefs_utils_config.h @ONLY)
+target_include_directories(project_options INTERFACE ${CMAKE_CURRENT_BINARY_DIR})
+
 # Link this 'library' to use the warnings specified in CompilerWarnings.cmake
 add_library(project_warnings INTERFACE)
 
