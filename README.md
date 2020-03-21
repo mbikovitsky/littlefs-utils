@@ -31,7 +31,7 @@ Allowed options:
 
 If a block count is not specified, the application attemps to infer it from
 the input file's size. On *nix systems this works even for block devices.
-On Windows, when opening a physical disk the block count *must* be specified.
+On Windows and macOS, when opening a physical disk the block count *must* be specified.
 
 Note: to access a physical disk on Windows, use a path of the form:
 `\\.\PhysicalDrive%d`. To get a list of physical disks, invoke, for instance:
