@@ -24,7 +24,7 @@ LittleFS2::LittleFS2(std::unique_ptr<IBlockDevice> block_device,
     _filesystem(),
     _mounted(false)
 {
-    _config.context = this;
+    _config.context = _block_device.get();
     _config.read = &_read;
     _config.prog = &_prog;
     _config.erase = &_erase;
@@ -102,17 +102,53 @@ std::unique_ptr<LittleFile> LittleFS2::open_file(std::string const & path,
     return std::make_unique<LittleFile2>(_filesystem, path, static_cast<int>(flags));
 }
 
+void LittleFS2::format(IBlockDevice & block_device,
+                       lfs2_size_t const read_size,
+                       lfs2_size_t const program_size,
+                       std::int32_t const block_cycles,
+                       lfs2_size_t const cache_size,
+                       lfs2_size_t const lookahead_size,
+                       lfs2_size_t const name_max,
+                       lfs2_size_t const file_max,
+                       lfs2_size_t const attr_max)
+{
+    lfs2_config config {};
+    config.context = &block_device;
+    config.read = &_read;
+    config.prog = &_prog;
+    config.erase = &_erase;
+    config.sync = &_sync;
+    config.read_size = read_size;
+    config.prog_size = program_size;
+    config.block_size = block_device.block_size();
+    config.block_count = block_device.block_count();
+    config.block_cycles = block_cycles;
+    config.cache_size = ((0 == cache_size) ? config.block_size : cache_size);
+    config.lookahead_size = lookahead_size;
+    config.name_max = name_max;
+    config.file_max = file_max;
+    config.attr_max = attr_max;
+
+    lfs2_t filesystem {};
+
+    auto const result = lfs2_format(&filesystem, &config);
+    if (result < 0)
+    {
+        throw std::system_error(result, littlefs_category(), "lfs2_format");
+    }
+}
+
 int LittleFS2::_read(lfs2_config const * config,
                      lfs2_block_t block,
                      lfs2_off_t offset,
                      void * buffer,
                      lfs2_size_t size) noexcept
 {
-    auto * instance = static_cast<LittleFS2 *>(config->context);
+    auto * block_device = static_cast<IBlockDevice *>(config->context);
 
     try
     {
-        instance->_block_device->read(block, offset, buffer, size);
+        block_device->read(block, offset, buffer, size);
     }
     catch (std::exception const &)
     {
@@ -128,11 +164,11 @@ int LittleFS2::_prog(lfs2_config const * config,
                      void const * buffer,
                      lfs2_size_t size) noexcept
 {
-    auto * instance = static_cast<LittleFS2 *>(config->context);
+    auto * block_device = static_cast<IBlockDevice *>(config->context);
 
     try
     {
-        instance->_block_device->program(block, offset, buffer, size);
+        block_device->program(block, offset, buffer, size);
     }
     catch (std::exception const &)
     {
@@ -144,11 +180,11 @@ int LittleFS2::_prog(lfs2_config const * config,
 
 int LittleFS2::_erase(lfs2_config const * config, lfs2_block_t block) noexcept
 {
-    auto * instance = static_cast<LittleFS2 *>(config->context);
+    auto * block_device = static_cast<IBlockDevice *>(config->context);
 
     try
     {
-        instance->_block_device->erase(block);
+        block_device->erase(block);
     }
     catch (std::exception const &)
     {
@@ -160,11 +196,11 @@ int LittleFS2::_erase(lfs2_config const * config, lfs2_block_t block) noexcept
 
 int LittleFS2::_sync(lfs2_config const * config) noexcept
 {
-    auto * instance = static_cast<LittleFS2 *>(config->context);
+    auto * block_device = static_cast<IBlockDevice *>(config->context);
 
     try
     {
-        instance->_block_device->sync();
+        block_device->sync();
     }
     catch (std::exception const &)
     {

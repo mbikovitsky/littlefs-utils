@@ -11,5 +11,5 @@ target_include_directories(littlefs
 
 target_link_libraries(littlefs
     PRIVATE project_options project_warnings
-            CONAN_PKG::fmt CONAN_PKG::ms-gsl
+            CONAN_PKG::fmt CONAN_PKG::Microsoft.GSL
     PUBLIC  littlefs1 littlefs2)

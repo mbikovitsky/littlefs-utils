@@ -32,6 +32,11 @@ public:
     std::vector<LittleFS::DirectoryEntry> list_directory(std::string const & path) override;
     std::unique_ptr<LittleFile> open_file(std::string const & path, OpenFlags flags) override;
 
+    static void format(IBlockDevice & block_device,
+                       lfs1_size_t read_size,
+                       lfs1_size_t program_size,
+                       lfs1_size_t lookahead = 128);
+
 private:
     static int _read(lfs1_config const * config,
                      lfs1_block_t block,

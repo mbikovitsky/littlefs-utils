@@ -15,17 +15,14 @@
 #include <fmt/core.h>
 #include <gsl/gsl>
 
-#include <CFile.hpp>
 #include <FileBlockDevice.hpp>
-#include <LittleFileInputStream.hpp>
-#include <OutputArchive.hpp>
 #include <Util.hpp>
 
 #if defined(_MSC_VER)
     #include <Unicode.hpp>
 #endif
 
-#include <littlefs_extract_config.h>
+#include <littlefs_format_config.h>
 #include <littlefs_utils_config.h>
 
 #include <LittleFS1.hpp>
@@ -40,14 +37,10 @@ struct CommandLineOptions
     std::uint32_t read_size;
     std::uint32_t prog_size;
     std::string input_file_path;
-    std::string output_file_path;
 };
 
 
 namespace po = boost::program_options;
-
-
-static constexpr int TAR_FILE_PERMISSIONS = 0644;
 
 
 std::optional<CommandLineOptions> parse_command_line(std::string const & executable,
@@ -57,13 +50,12 @@ std::optional<CommandLineOptions> parse_command_line(std::string const & executa
     desc.add_options()
         ("help,h", "produce help message")
         ("version,v", "show version")
-        ("littlefs-version,l", po::value<std::uint32_t>()->default_value(LITTLEFS_EXTRACT_DEFAULT_VERSION), "littlefs version to use")
-        ("block-size,b", po::value<std::uint32_t>()->default_value(LITTLEFS_EXTRACT_DEFAULT_BLOCK_SIZE), "filesystem block size")
+        ("littlefs-version,l", po::value<std::uint32_t>()->default_value(LITTLEFS_FORMAT_DEFAULT_VERSION), "littlefs version to use")
+        ("block-size,b", po::value<std::uint32_t>()->default_value(LITTLEFS_FORMAT_DEFAULT_BLOCK_SIZE), "filesystem block size")
         ("block-count,c", po::value<std::uint32_t>(), "filesystem block count")
-        ("read-size,r", po::value<std::uint32_t>()->default_value(LITTLEFS_EXTRACT_DEFAULT_READ_SIZE), "filesystem read size")
-        ("prog-size,p", po::value<std::uint32_t>()->default_value(LITTLEFS_EXTRACT_DEFAULT_PROG_SIZE), "filesystem prog size")
+        ("read-size,r", po::value<std::uint32_t>()->default_value(LITTLEFS_FORMAT_DEFAULT_READ_SIZE), "filesystem read size")
+        ("prog-size,p", po::value<std::uint32_t>()->default_value(LITTLEFS_FORMAT_DEFAULT_PROG_SIZE), "filesystem prog size")
         ("input-file,i", po::value<std::string>()->required(), "littlefs image file")
-        ("output-file,o", po::value<std::string>()->default_value("-"), "output tar file")
     ;
 
     po::variables_map vm {};
@@ -73,7 +65,7 @@ std::optional<CommandLineOptions> parse_command_line(std::string const & executa
     {
         auto const & usage =
             fmt::format("Usage: {} -i INPUT_FILE [-l LITTLEFS_VERSION] [-b BLOCK_SIZE] "
-                        "[-c BLOCK_COUNT] [-r READ_SIZE] [-p PROG_SIZE] [-o OUTPUT_FILE]\n",
+                        "[-c BLOCK_COUNT] [-r READ_SIZE] [-p PROG_SIZE]\n",
                         executable);
 
 #if _MSC_VER
@@ -100,7 +92,6 @@ std::optional<CommandLineOptions> parse_command_line(std::string const & executa
     options.read_size = vm["read-size"].as<std::uint32_t>();
     options.prog_size = vm["prog-size"].as<std::uint32_t>();
     options.input_file_path = vm["input-file"].as<std::string>();
-    options.output_file_path = vm["output-file"].as<std::string>();
 
     if (0 != vm.count("block-count"))
     {
@@ -136,41 +127,24 @@ int entry_point(std::string const & executable, std::vector<std::string> const &
         options->block_count = static_cast<std::uint32_t>(block_count);
     }
 
-    auto image_file = std::make_unique<FileBlockDevice>(options->input_file_path,
-                                                        false,
-                                                        options->block_size,
-                                                        options->block_count.value());
+    auto image_file = FileBlockDevice(options->input_file_path,
+                                      true,
+                                      options->block_size,
+                                      options->block_count.value());
 
     std::unique_ptr<LittleFS> filesystem {};
     switch (options->version)
     {
     case 1:
-        filesystem = std::make_unique<LittleFS1>(std::move(image_file),
-                                                 options->read_size,
-                                                 options->prog_size);
+        LittleFS1::format(image_file, options->read_size, options->prog_size);
         break;
 
     case 2:
-        filesystem = std::make_unique<LittleFS2>(std::move(image_file),
-                                                 options->read_size,
-                                                 options->prog_size);
+        LittleFS2::format(image_file, options->read_size, options->prog_size);
         break;
 
     default:
         throw std::runtime_error("Invalid littlefs version specified");
-    }
-
-    CFile output_file = options->output_file_path == "-" ? CFile::standard_output()
-                                                         : CFile(options->output_file_path, "wb");
-
-    // NOLINTNEXTLINE(hicpp-signed-bitwise): There are unsigned literals
-    OutputArchive archive(std::move(output_file), ARCHIVE_FORMAT_TAR_PAX_RESTRICTED);
-
-    for (auto const & file_info : filesystem->recursive_dirlist("/"))
-    {
-        auto const stream = std::make_unique<LittleFileInputStream>(
-            filesystem->open_file(file_info.path, LittleFS::OpenFlags::Read));
-        archive.add_file(file_info.path.substr(1), *stream, TAR_FILE_PERMISSIONS);
     }
 
     return 0;
