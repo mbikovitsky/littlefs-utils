@@ -1,15 +1,5 @@
 add_executable(littlefs-extract
-    main.cpp
-    Util.cpp Util.hpp
-    FileBlockDevice.cpp FileBlockDevice.hpp
-    CFile.cpp CFile.hpp
-    IInputStream.hpp
-    OutputArchive.cpp OutputArchive.hpp
-    LittleFileInputStream.hpp)
-if (MSVC)
-    target_sources(littlefs-extract
-        PRIVATE Unicode.cpp Unicode.hpp)
-endif (MSVC)
+    main.cpp)
 
 if(NOT LITTLEFS_EXTRACT_DEFAULT_VERSION)
     set(LITTLEFS_EXTRACT_DEFAULT_VERSION
@@ -37,5 +27,5 @@ target_include_directories(littlefs-extract PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 target_link_libraries(littlefs-extract
     PRIVATE project_options project_warnings
-            CONAN_PKG::libarchive CONAN_PKG::boost CONAN_PKG::Microsoft.GSL CONAN_PKG::fmt
-            littlefs)
+            CONAN_PKG::boost CONAN_PKG::Microsoft.GSL CONAN_PKG::fmt
+            common)

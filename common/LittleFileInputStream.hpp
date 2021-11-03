@@ -6,8 +6,9 @@
 
 #include <gsl/gsl>
 
+#include <LittleFile.hpp>
+
 #include "IInputStream.hpp"
-#include "LittleFile.hpp"
 
 
 class LittleFileInputStream : public IInputStream
