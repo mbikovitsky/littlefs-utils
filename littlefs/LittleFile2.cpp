@@ -46,6 +46,23 @@ std::size_t LittleFile2::read(gsl::span<std::byte> buffer)
     return static_cast<std::size_t>(read);
 }
 
+std::size_t LittleFile2::write(gsl::span<std::byte const> buffer)
+{
+    if (buffer.size() > std::numeric_limits<lfs2_size_t>::max())
+    {
+        throw std::length_error("Write buffer too large");
+    }
+
+    auto const read =
+        lfs2_file_write(_filesystem, &_file, buffer.data(), static_cast<lfs2_size_t>(buffer.size()));
+    if (read < 0)
+    {
+        throw std::system_error(read, littlefs_category(), "lfs2_file_write");
+    }
+
+    return static_cast<std::size_t>(read);
+}
+
 std::size_t LittleFile2::size() const
 {
     auto const file_size = lfs2_file_size(_filesystem, &_file);
