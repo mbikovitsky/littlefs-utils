@@ -37,5 +37,5 @@ target_include_directories(littlefs-extract PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 target_link_libraries(littlefs-extract
     PRIVATE project_options project_warnings
-            CONAN_PKG::libarchive CONAN_PKG::boost CONAN_PKG::ms-gsl CONAN_PKG::fmt
+            CONAN_PKG::libarchive CONAN_PKG::boost CONAN_PKG::Microsoft.GSL CONAN_PKG::fmt
             littlefs)
