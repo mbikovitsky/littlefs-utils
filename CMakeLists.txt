@@ -36,6 +36,7 @@ target_compile_features(project_options INTERFACE cxx_std_17 c_std_99)
 if(MSVC)
     target_compile_definitions(project_options INTERFACE -DNOMINMAX)
     target_compile_definitions(project_options INTERFACE -DUNICODE -D_UNICODE)
+    target_link_options(project_options INTERFACE /MANIFEST:NO)
 endif()
 
 set(LITTLEFS_UTILS_VERSION $ENV{LITTLEFS_UTILS_VERSION})
