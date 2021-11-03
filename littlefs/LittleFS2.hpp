@@ -38,6 +38,16 @@ public:
     std::vector<LittleFS::DirectoryEntry> list_directory(std::string const & path) override;
     std::unique_ptr<LittleFile> open_file(std::string const & path, OpenFlags flags) override;
 
+    static void format(IBlockDevice & block_device,
+                       lfs2_size_t read_size,
+                       lfs2_size_t program_size,
+                       std::int32_t block_cycles = 100,
+                       lfs2_size_t cache_size = 0,
+                       lfs2_size_t lookahead_size = 128,
+                       lfs2_size_t name_max = LFS2_NAME_MAX,
+                       lfs2_size_t file_max = LFS2_FILE_MAX,
+                       lfs2_size_t attr_max = LFS2_ATTR_MAX);
+
 private:
     static int _read(lfs2_config const * config,
                      lfs2_block_t block,

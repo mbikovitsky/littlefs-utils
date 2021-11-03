@@ -19,7 +19,7 @@ LittleFS1::LittleFS1(std::unique_ptr<IBlockDevice> block_device,
     _filesystem(),
     _mounted(false)
 {
-    _config.context = this;
+    _config.context = _block_device.get();
     _config.read = &_read;
     _config.prog = &_prog;
     _config.erase = &_erase;
@@ -92,17 +92,43 @@ std::unique_ptr<LittleFile> LittleFS1::open_file(std::string const & path,
     return std::make_unique<LittleFile1>(_filesystem, path, static_cast<int>(flags));
 }
 
+void LittleFS1::format(IBlockDevice & block_device,
+                       lfs1_size_t const read_size,
+                       lfs1_size_t const program_size,
+                       lfs1_size_t const lookahead)
+{
+    lfs1_config config {};
+    config.context = &block_device;
+    config.read = &_read;
+    config.prog = &_prog;
+    config.erase = &_erase;
+    config.sync = &_sync;
+    config.read_size = read_size;
+    config.prog_size = program_size;
+    config.block_size = block_device.block_size();
+    config.block_count = block_device.block_count();
+    config.lookahead = lookahead;
+
+    lfs1_t filesystem {};
+
+    auto const result = lfs1_format(&filesystem, &config);
+    if (result < 0)
+    {
+        throw std::system_error(result, littlefs_category(), "lfs1_format");
+    }
+}
+
 int LittleFS1::_read(lfs1_config const * config,
                      lfs1_block_t block,
                      lfs1_off_t offset,
                      void * buffer,
                      lfs1_size_t size) noexcept
 {
-    auto * instance = static_cast<LittleFS1 *>(config->context);
+    auto * block_device = static_cast<IBlockDevice *>(config->context);
 
     try
     {
-        instance->_block_device->read(block, offset, buffer, size);
+        block_device->read(block, offset, buffer, size);
     }
     catch (std::exception const &)
     {
@@ -118,11 +144,11 @@ int LittleFS1::_prog(lfs1_config const * config,
                      void const * buffer,
                      lfs1_size_t size) noexcept
 {
-    auto * instance = static_cast<LittleFS1 *>(config->context);
+    auto * block_device = static_cast<IBlockDevice *>(config->context);
 
     try
     {
-        instance->_block_device->program(block, offset, buffer, size);
+        block_device->program(block, offset, buffer, size);
     }
     catch (std::exception const &)
     {
@@ -134,11 +160,11 @@ int LittleFS1::_prog(lfs1_config const * config,
 
 int LittleFS1::_erase(lfs1_config const * config, lfs1_block_t block) noexcept
 {
-    auto * instance = static_cast<LittleFS1 *>(config->context);
+    auto * block_device = static_cast<IBlockDevice *>(config->context);
 
     try
     {
-        instance->_block_device->erase(block);
+        block_device->erase(block);
     }
     catch (std::exception const &)
     {
@@ -150,11 +176,11 @@ int LittleFS1::_erase(lfs1_config const * config, lfs1_block_t block) noexcept
 
 int LittleFS1::_sync(lfs1_config const * config) noexcept
 {
-    auto * instance = static_cast<LittleFS1 *>(config->context);
+    auto * block_device = static_cast<IBlockDevice *>(config->context);
 
     try
     {
-        instance->_block_device->sync();
+        block_device->sync();
     }
     catch (std::exception const &)
     {
