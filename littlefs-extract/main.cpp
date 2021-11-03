@@ -1,6 +1,8 @@
+#include <algorithm>
 #include <cstdint>
 #include <exception>
 #include <iostream>
+#include <iterator>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -189,10 +191,10 @@ int main(int argc, char ** argv) noexcept
 
         std::vector<std::string> arguments {};
         arguments.reserve(arguments_span.size());
-        for (auto const & argument : arguments_span)
-        {
-            arguments.push_back(wide_char_to_utf8(argument));
-        }
+        std::transform(std::begin(arguments_span),
+                       std::end(arguments_span),
+                       std::back_inserter(arguments),
+                       wide_char_to_utf8);
 
         std::string const executable(wide_char_to_utf8(argv_span.at(0)));
 #else
